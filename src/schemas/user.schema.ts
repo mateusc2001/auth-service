@@ -1,19 +1,17 @@
 import { Schema, model } from 'mongoose'
 import { UserModel } from '../model/user.model';
 
-const userSchema = new Schema({
-    username: { type: String, required: true, unique: true },
+const userSchemaObject = new Schema({
+    username: { type: String, required: false, unique: true },
     password: { type: String, required: true },
-    profile: { type: Schema.Types.ObjectId, ref: 'Profile', required: true },
-    person: { type: Schema.Types.ObjectId, ref: 'Person', required: true },
-    desabilitado: { type: Boolean, default: false },
-    inativo: { type: Boolean, default: false }
+    person: { type: Schema.Types.ObjectId, ref: "Person" },
+    profile: { type: Schema.Types.ObjectId, ref: "Profile" }
 }, {
     timestamps: true
 })
 
-userSchema.set('toJSON', {
+userSchemaObject.set('toJSON', {
     virtuals: true
 });
 
-export const User = model<UserModel>('User', userSchema)
+export const UserSchema = model<UserModel>('User', userSchemaObject);

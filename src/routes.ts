@@ -1,10 +1,9 @@
-import { Router, NextFunction, Response, Request } from 'express'
+import { Router, NextFunction, Response, Request, request } from 'express'
 import { UserModel } from './model/user.model';
-import { User } from './schemas/user.schema';
 import * as config from './config/config';
 import * as jwt from "jsonwebtoken";
-import { Person } from './schemas/person.schema';
-import { PersonModel } from './model/person.model';
+import { UserSchema } from "./schemas/user.schema";
+import * as http from "request-promise-native";
 
 class Routes {
     public route = Router();
@@ -36,28 +35,10 @@ class Routes {
         */
         this.route.post('/auth/login', async (req: Request, res: Response) => {
             const { username, password } = req.body;
-            console.log('username', username);
-            console.log('password', password);
-            const user = (await User.findOne({ username: username }));
+            const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
             if (!user) return res.status(404).json({ error: 'Usuário não encontrado.'});
             if (user.password != password) return res.status(404).json({ error: 'Senha inválida.'});
             createToken(res, () => {}, user);
-        });
-
-        this.route.post('/discount-authorization/v1/store-balance/debit', async (req: Request, res: Response) => {
-            console.log("================= DÉBITOS =================");
-            console.log(req.body);
-            res.json([
-                {
-                    identificador: 10,
-                    id: 20
-                }
-            ]);
-        });
-        this.route.post('/discount-authorization/v1/store-balance/credit', async (req: Request, res: Response) => {
-            console.log("================= CRÉDITOS =================");
-            console.log(req.body);
-            res.json([]);
         });
     }
 }
@@ -65,7 +46,7 @@ class Routes {
 export default new Routes().route
 
 export const validateToken = (req: Request, res: Response, next: NextFunction) => {
-    const token = <string>req.headers["auth"];
+    const token = <string>req.headers["app-token"];
     let jwtPayload;
     try {
         jwtPayload = <any>jwt.verify(token, config.default.jwtSecret);
@@ -84,4 +65,9 @@ export const createToken = (res: Response, next: NextFunction, user: UserModel) 
     });
     res.json({ token: newToken, user: user });
     next();
+}
+
+export async function findUserByUsername (username): Promise<UserModel> {
+    const baseUrl = 'http://localhost:2020/v2/user/username/' + username;
+    return await http.get(baseUrl);
 }

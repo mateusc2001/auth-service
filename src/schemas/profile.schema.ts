@@ -1,16 +1,13 @@
 import { Schema, model } from 'mongoose'
-import { ProfileModel } from '../model/profile.model';
 
-const profileSchema = new Schema({
-    profileName: { type: String, required: true, unique: true },
-    desabilitado: { type: Boolean, default: false },
-    inativo: { type: Boolean, default: false }
+const profileSchemaObject = new Schema({
+    profileName: { type: String, required: true },
 }, {
     timestamps: true
 })
 
-profileSchema.set('toJSON', {
+profileSchemaObject.set('toJSON', {
     virtuals: true
 });
 
-export const Profile = model<ProfileModel>('Profile', profileSchema)
+export const ProfileSchema = model('Profile', profileSchemaObject);
