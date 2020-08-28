@@ -1,18 +1,17 @@
 "use strict";Object.defineProperty(exports, "__esModule", {value: true});var _mongoose = require('mongoose');
 
 
-const userSchema = new (0, _mongoose.Schema)({
-    username: { type: String, required: true, unique: true },
+const userSchemaObject = new (0, _mongoose.Schema)({
+    username: { type: String, required: false, unique: true },
     password: { type: String, required: true },
-    profile: { type: _mongoose.Schema.Types.ObjectId, ref: 'Profile', required: true },
-    desabilitado: { type: Boolean, default: false },
-    inativo: { type: Boolean, default: false }
+    person: { type: _mongoose.Schema.Types.ObjectId, ref: "Person" },
+    profile: { type: _mongoose.Schema.Types.ObjectId, ref: "Profile" }
 }, {
     timestamps: true
 })
 
-userSchema.set('toJSON', {
+userSchemaObject.set('toJSON', {
     virtuals: true
 });
 
- const User = _mongoose.model('User', userSchema); exports.User = User
+ const UserSchema = _mongoose.model('User', userSchemaObject); exports.UserSchema = UserSchema;

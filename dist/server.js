@@ -4,4 +4,4 @@ const port = 1900;
 
 _app2.default.listen(port);
 
-console.log('Serviço de autenticação rodando na porta ' + port);
+console.log('Serviço de autenticação rodando na porta', port);

@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon src/server.ts",
-    "build": "sucrase ./src -d ./dist --transforms typescript,imports",
+    "dev": "nodemon src/server.ts --trace-warnings",
+    "build": "sucrase ./src -d ./dist --transforms typescript,imports ",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

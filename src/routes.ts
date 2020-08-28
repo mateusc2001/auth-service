@@ -34,11 +34,25 @@ class Routes {
         para retornar um token quando usuário logar na aplicação.
         */
         this.route.post('/auth/login', async (req: Request, res: Response) => {
-            const { username, password } = req.body;
-            const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
-            if (!user) return res.status(404).json({ error: 'Usuário não encontrado.'});
-            if (user.password != password) return res.status(404).json({ error: 'Senha inválida.'});
-            createToken(res, () => {}, user);
+            try {
+                const { username, password } = req.body;
+                const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
+                if (!user) res.status(404).json({ error: 'Usuário não encontrado.'});
+                if (user.password != password) res.status(404).json({ error: 'Senha inválida.'});
+                createToken(res, () => {}, user);
+            } catch(err) {
+                res.status(404).json({ error: 'Usuário não encontrado.'});
+            }
+        });
+
+        this.route.post('/estoque', async (req: Request, res: Response) => {
+            try {
+                res.json({
+                    estoqueCd: 10
+                });
+            } catch(err) {
+                res.status(404).json({ error: 'Usuário não encontrado.'});
+            }
         });
     }
 }
