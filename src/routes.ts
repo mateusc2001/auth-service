@@ -10,170 +10,534 @@ let usuarios = [
         id: 1,
         usuario: 'renata',
         nomeCompleto: 'Renata Barth',
-        senha: '111'
+        dataCriacao: new Date("2021-06-21T22:06:26.819Z"),
+        senha: '111',
+        saldo: 0
     }, {
         id: 2,
         usuario: 'vinicius',
+        dataCriacao: new Date("2021-06-22T22:03:46.819Z"),
         nomeCompleto: 'Vinicius Barth',
-        senha: '222'
+        senha: '222',
+        saldo: 0
     }, {
         id: 3,
         usuario: 'admin',
+        dataCriacao: new Date("2021-06-22T22:04:46.819Z"),
         nomeCompleto: 'Mateus Camargo',
-        senha: 'admin'
+        senha: 'admin',
+        saldo: 0
     }
 ];
 let registros = [];
+registros = [
+    {
+        "banco": 2,
+        "data": "28/12/2020",
+        "descricao": "INTEGR.CAPITAL SUBSCRITO ",
+        "documento": "1",
+        "entrada": false,
+        "valor": -50,
+        "id": 49679,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP DINHEIRO ",
+        "documento": "304899941",
+        "entrada": true,
+        "valor": 260,
+        "id": 53588,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE 24H ",
+        "documento": "453937918",
+        "entrada": true,
+        "valor": 7130,
+        "id": 48789,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE 24H ",
+        "documento": "424950316",
+        "entrada": true,
+        "valor": 7360,
+        "id": 52629,
+        "dataCriacao": "2021-06-23T20:29:07.715Z",
+        "transacao": {
+            "idUsuarioOrigem": 1,
+            "idUsuarioDestinatario": 2,
+            "geraComissao": false,
+            "porcentagemComissao": null,
+            "valorComissao": null
+        },
+        "descricaoPessoal": "Financiamento ka"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE ",
+        "documento": "424950316",
+        "entrada": true,
+        "valor": 2338,
+        "id": 48783,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE ",
+        "documento": "424950286",
+        "entrada": true,
+        "valor": 19520,
+        "id": 48694,
+        "dataCriacao": "2021-06-23T20:29:07.715Z",
+        "transacao": {
+            "idUsuarioOrigem": 1,
+            "idUsuarioDestinatario": 3,
+            "geraComissao": false,
+            "porcentagemComissao": null,
+            "valorComissao": null
+        },
+        "descricaoPessoal": "Financiamento lalal"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "COMPRAS NACIONAIS SERAFIM AUTO PECAS       GRAVA",
+        "documento": "VE0775673",
+        "entrada": false,
+        "valor": -166,
+        "id": 55571,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE 72H ",
+        "documento": "424950317",
+        "entrada": true,
+        "valor": 1425,
+        "id": 51570,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "07/01/2021",
+        "descricao": "DEP CHEQUE 72H ",
+        "documento": "424950318",
+        "entrada": true,
+        "valor": 1488,
+        "id": 53685,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "08/01/2021",
+        "descricao": "DEV. CHEQUE DEPOSITADO ",
+        "documento": "850726/11",
+        "entrada": false,
+        "valor": -1090,
+        "id": 48726,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "08/01/2021",
+        "descricao": "DEV. CHEQUE DEPOSITADO ",
+        "documento": "000040/22",
+        "entrada": false,
+        "valor": -390,
+        "id": 56507,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "11/01/2021",
+        "descricao": "TED 59285411000113 BANCO PAN SA                 ",
+        "documento": "736195",
+        "entrada": true,
+        "valor": 114.2,
+        "id": 51542,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "12/01/2021",
+        "descricao": "COMPRAS NACIONAIS SCHEILA LAUX HOLDEFER    PORTA",
+        "documento": "VE0141461",
+        "entrada": false,
+        "valor": -292,
+        "id": 55481,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "12/01/2021",
+        "descricao": "DEV. CHEQUE DEPOSITADO ",
+        "documento": "000051/35",
+        "entrada": false,
+        "valor": -1488,
+        "id": 49749,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "TED 59285411000113 BANCO PAN SA                 ",
+        "documento": "903743",
+        "entrada": true,
+        "valor": 80.57,
+        "id": 53590,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "DEBITO TED/IB 81035063034 AUREA CORUJA BARTH",
+        "documento": "I02585",
+        "entrada": false,
+        "valor": -26500,
+        "id": 49719,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -270,
+        "id": 54457,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "DEBITO CONVENIOS ",
+        "documento": "RGE SUL-G",
+        "entrada": false,
+        "valor": -175.18,
+        "id": 51516,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "DEBITO CONVENIOS ",
+        "documento": "CLARORS-G",
+        "entrada": false,
+        "valor": -41.59,
+        "id": 1665,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "DEBITO CONVENIOS ",
+        "documento": "VIVO RS-G",
+        "entrada": false,
+        "valor": -91.83,
+        "id": 51725,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "DEBITO CONVENIOS ",
+        "documento": "VIVO",
+        "entrada": false,
+        "valor": -107.11,
+        "id": 49683,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -116.8,
+        "id": 55387,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -125.66,
+        "id": 54400,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -582.44,
+        "id": 55386,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "13/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -731.33,
+        "id": 51664,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "14/01/2021",
+        "descricao": "LIQUIDACAO DE PARCELA ",
+        "documento": "C00531561",
+        "entrada": false,
+        "valor": -973.18,
+        "id": 54679,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "14/01/2021",
+        "descricao": "LIQUIDACAO DE BLOQUETOS ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -547.88,
+        "id": 52626,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "14/01/2021",
+        "descricao": "TRANSF ENTRE CONTAS 00424953005 VINICIOS DA SILV",
+        "documento": "SI02679",
+        "entrada": false,
+        "valor": -20000,
+        "id": 52501,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "14/01/2021",
+        "descricao": "TRANSF ENTRE CONTAS 01157799060 ANTONIO VARGAS F",
+        "documento": "SI02743",
+        "entrada": false,
+        "valor": -14000,
+        "id": 55481,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "15/01/2021",
+        "descricao": "LIQUIDACAO DE PARCELA ",
+        "documento": "C00520032",
+        "entrada": false,
+        "valor": -2840.94,
+        "id": 56446,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "15/01/2021",
+        "descricao": "TRANSF ENTRE CONTAS 76317064091 MARCUS VINICIUS ",
+        "documento": "SI04355",
+        "entrada": false,
+        "valor": -7500,
+        "id": 53532,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "19/01/2021",
+        "descricao": "COMPRAS NACIONAIS AUTO POSTO BRAZUCA       GRAVA",
+        "documento": "VE0073508",
+        "entrada": false,
+        "valor": -100,
+        "id": 1664,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "20/01/2021",
+        "descricao": "CESTA DE RELACIONAMENTO ",
+        "documento": " ",
+        "entrada": false,
+        "valor": -117.95,
+        "id": 51574,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "21/01/2021",
+        "descricao": "COMPRAS NACIONAIS CASA JARDIM I            ESTAN",
+        "documento": "VE0387673",
+        "entrada": false,
+        "valor": -126,
+        "id": 1818,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "21/01/2021",
+        "descricao": "TED 59285411000113 BANCO PAN SA                 ",
+        "documento": "308820",
+        "entrada": true,
+        "valor": 606.2,
+        "id": 52625,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "22/01/2021",
+        "descricao": "TED 20439215000110 RENATO BARTH AUTOMOVEIS LTDA ",
+        "documento": "403040",
+        "entrada": true,
+        "valor": 73318.21,
+        "id": 48913,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "25/01/2021",
+        "descricao": "INTEGR.CAPITAL SUBSCRITO ",
+        "documento": "1",
+        "entrada": false,
+        "valor": -50,
+        "id": 53589,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "25/01/2021",
+        "descricao": "TRANSF ENTRE CONTAS 97516945072 IGOR GOMES COSTA",
+        "documento": "SI04980",
+        "entrada": false,
+        "valor": -2020,
+        "id": 55640,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "27/01/2021",
+        "descricao": "TRANSF ENTRE CONTAS 02945712059 FERNANDO JUNIOR ",
+        "documento": "SI01875",
+        "entrada": false,
+        "valor": -50000,
+        "id": 52595,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "28/01/2021",
+        "descricao": "DEBITO TED/IB 71072616068 CLEBES UBIRAJARA MOREI",
+        "documento": "I02977",
+        "entrada": false,
+        "valor": -20000,
+        "id": 50831,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "01/02/2021",
+        "descricao": "ARRECADACAO ESTADUAL ",
+        "documento": "DETRAN-RS",
+        "entrada": false,
+        "valor": -139.9,
+        "id": 48688,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "02/02/2021",
+        "descricao": "TED 20439215000110 RENATO BARTH AUTOMOVEIS LTDA ",
+        "documento": "404893",
+        "entrada": true,
+        "valor": 11192.1,
+        "id": 55571,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "02/02/2021",
+        "descricao": "DEP CHEQUE 24H ",
+        "documento": "424950260",
+        "entrada": true,
+        "valor": 1090,
+        "id": 48908,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "03/02/2021",
+        "descricao": "COMPRAS NACIONAIS QUADROS E FILHOS         GRAVA",
+        "documento": "VE0168797",
+        "entrada": false,
+        "valor": -50,
+        "id": 53593,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "03/02/2021",
+        "descricao": "ARRECADACAO ESTADUAL ",
+        "documento": "GADE",
+        "entrada": false,
+        "valor": -666.18,
+        "id": 48726,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "03/02/2021",
+        "descricao": "ARRECADACAO ESTADUAL ",
+        "documento": "DETRAN-RS",
+        "entrada": false,
+        "valor": -1102.24,
+        "id": 55420,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "03/02/2021",
+        "descricao": "DEBITO TED/IB 71072616068 CLEBES UBIRAJARA MOREI",
+        "documento": "I03267",
+        "entrada": false,
+        "valor": -12000,
+        "id": 49746,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    },
+    {
+        "banco": 2,
+        "data": "03/02/2021",
+        "descricao": "DEBITO TED/IB 74734563004 MARIA REGINA FIDELIS L",
+        "documento": "I03296",
+        "entrada": false,
+        "valor": -495,
+        "id": 51728,
+        "dataCriacao": "2021-06-23T20:29:07.715Z"
+    }
+];
 
-class Routes {
-    public route = Router();
 
-    constructor() {
-        this.route.post('/upload', function (req, res) {
-            console.log(req.body);
-            res.json({ ok: true });
-        });
-
-        this.route.post('/logar', function (req, res) {
-            const usuario = req.body.usuario;
-            const senha = req.body.senha;
-            const usuarioLogado = usuarios.find(user => user.usuario == usuario && user.senha == senha);
-            res.json({ ok: usuarioLogado });
-        });
-
-        this.route.post('/add/user', function (req, res) {
-            const usuario = req.body.usuario;
-            const senha = req.body.senha;
-            const nomeCompleto = req.body.nomeCompleto;
-            const newUser = {
-                id: (usuarios.length + 1),
-                usuario: usuario,
-                senha: senha,
-                nomeCompleto: nomeCompleto
-            };
-            usuarios.push(newUser);
-            res.json(newUser);
-        });
-
-        this.route.get('/users', function (req, res) {
-            res.json(usuarios.map(user => {
-                return {
-                    id: user.id,
-                    nomeCompleto: user.nomeCompleto
-                };
-            }));
-        });
-
-        this.route.post('/registros', function (req, res) {
-            const itens: any[] = req.body;
-
-
-            itens.forEach(item => {
-                const stringToHash = (Math.floor(Math.random() * 100000) + 1).toString();
-                var hash = 0, i, chr;
-                if (stringToHash.length === 0) return hash;
-                for (i = 0; i < stringToHash.length; i++) {
-                    chr = stringToHash.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + chr;
-                    hash |= 0; // Convert to 32bit integer
-                }
-
-                item.id = hash;
-                registros.push(item);
-            });
-            res.json(req.body);
-        });
-
-        this.route.get('/registros', function (req, res) {
-            res.json(registros);
-        });
-
-        this.route.get('/registros/pre-aprovados/page/:page/count/:count', function (req, res) {
-            const page = parseFloat(req.params.page);
-            const count = parseFloat(req.params.count);
-            const registrosResponse = registros.filter(item => !item.origem);
-            const totalPages = registrosResponse.length / count;
-            res.json({
-                totalResults: registrosResponse.length,
-                totalPages: Math.ceil(totalPages),
-                data: registrosResponse.slice((page - 1) * count, page * count)
-            });
-        });
-
-        this.route.get('/hash', (req, res) => {
-            const stringToHash = req.query.str;
-
-            var hash = 0, i, chr;
-            if (stringToHash.length === 0) return hash;
-            for (i = 0; i < stringToHash.length; i++) {
-                chr = stringToHash.charCodeAt(i);
-                hash = ((hash << 5) - hash) + chr;
-                hash |= 0; // Convert to 32bit integer
-            }
-
-            res.json({
-                hash: hash
-            });
-        });
-
-
-
-
-
-
-        this.route.get('/page', function (req, res) {
-            res.sendFile('/Users/mateus/projetos/pocs/sorteador/index.html');
-        });
-        /* 
-        Este endpoint vai ser consumido pelo serviço de usuários
-        para gerar um token quando um usuário for cadastrado.
-        */
-        this.route.get('/auth', async (req: Request, res: Response) => {
-            const id = req.query.id;
-            createToken(res, () => { }, id);
-        });
-
-        /* 
-        Este endpoint vai ser consumido pelos demais
-        para validar um token.
-        */
-        this.route.get('/auth/validate', async (req: Request, res: Response) => {
-            validateToken(req, res, () => res.status(200).json({ msg: "tudo ok" }));
-        });
-
-        /* 
-        Este endpoint vai ser consumido pelo client
-        para retornar um token quando usuário logar na aplicação.
-        */
-        this.route.post('/auth/login', async (req: Request, res: Response) => {
-            try {
-                const { username, password } = req.body;
-                const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
-                if (!user) res.status(404).json({ error: 'Usuário não encontrado.' });
-                if (user.password != password) res.status(404).json({ error: 'Senha inválida.' });
-                createToken(res, () => { }, user);
-            } catch (err) {
-                res.status(404).json({ error: 'Usuário não encontrado.' });
-            }
-        });
-
-        this.route.post('/estoque', async (req: Request, res: Response) => {
-            try {
-                res.json({
-                    estoqueCd: 10
-                });
-            } catch (err) {
-                res.status(404).json({ error: 'Usuário não encontrado.' });
-            }
-        });
-
-        this.route.get('/teste', async (req: Request, res: Response) => {
-            res.sendFile('/Users/mateuscamargo/teste.html');
-        });
-
-
-        this.route.get('/poligono', (req, res) => {
-            const cordenadas = [
+let provedoresIspForce = [
+    {
+        provedorId: 1,
+        provedorName: "One Telecon",
+        enviroments: {
+            corPrimaria: "rgb(183 10 10)",
+            urlImagem: "https://static.bancointer.com.br/blog/banner-images/240be249-8ca8-4934-8364-d4a02b2e0d68.jpg",
+            cordenadas: [
                 [
                     {
                         "x": -20.12424683051076,
@@ -1182,14 +1546,411 @@ class Routes {
                         "y": -40.23276348639231
                     }
                 ]
-            ];
+            ],
+            numeroWhatsappCliente: "51982008358",
+            mensagemWhatsappCliente: "Mensagem",
+            linkAreaDeCliente: "https://google.com",
+            planos: [
+                {
+                    "id": 1,
+                    "titulo": "Plano básico",
+                    "valor": 10,
+                    "periodoDeCobranca": "Mês",
+                    "velocidade": 120,
+                    "color": "#00000",
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee"
+                    ],
+                    "naoContempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee"
+                    ]
+                },
+                {
+                    "id": 2,
+                    "titulo": "Plano intermediário",
+                    "valor": 10,
+                    "periodoDeCobranca": "Mês",
+                    "color": "#982176",
+                    "velocidade": 120,
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee",
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online"
+                    ],
+                    "naoContempla": [
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee"
+                    ]
+                },
+                {
+                    "id": 3,
+                    "titulo": "Plano completo",
+                    "valor": 10,
+                    "periodoDeCobranca": "Mês",
+                    "color": "#571665",
+                    "velocidade": 120,
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee",
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO"
+                    ],
+                    "naoContempla": [
+                        "McAfee"
+                    ]
+                },
+                {
+                    "id": 4,
+                    "titulo": "Plano premium",
+                    "valor": 10,
+                    "periodoDeCobranca": "Mês",
+                    "color": "#571665",
+                    "velocidade": 120,
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee",
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee"
+                    ],
+                    "naoContempla": []
+                }
+            ]
+        }
+    },
+    {
+        "provedorId": 2,
+        "provedorName": "Provedor do Juan",
+        "enviroments": {
+            "corPrimaria": "#2300ff",
+            "urlImagem": "https://avatarfiles.alphacoders.com/230/thumb-1920-230736.jpg",
+            "cordenadas": {},
+            "numeroWhatsappCliente": "51995748995",
+            "mensagemWhatsappCliente": "Olá seu puto",
+            "linkAreaDeCliente": "https://youtube.com",
+            "planos": [
+                {
+                    "id": 1,
+                    "titulo": "Primeiro plano teste",
+                    "valor": 50,
+                    "periodoDeCobranca": "Mês",
+                    "velocidade": 50,
+                    "color": "#379539",
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "Tanto faz"
+                    ],
+                    "naoContempla": [
+                        "Acesso ao porno",
+                        "Acesso ao Futebol",
+                        "Tanto faz"
+                    ]
+                },
+                {
+                    "id": 2,
+                    "titulo": "Plano fodase",
+                    "valor": 12,
+                    "periodoDeCobranca": "Mês",
+                    "color": "#982176",
+                    "velocidade": 120,
+                    "contempla": [
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online",
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee",
+                        "WiFi Plus Grátis",
+                        "NOW - Conteúdos Online"
+                    ],
+                    "naoContempla": [
+                        "Claro Vídeo",
+                        "SKEELO",
+                        "McAfee"
+                    ]
+                }
+            ]
+        }
+    }
+]
+provedoresIspForce[0].enviroments.cordenadas = [];
 
-            res.json(cordenadas.some(item => this.isInside(item, item.length, { x: req.query.lat, y: req.query.lng })));
+
+class Routes {
+    public route = Router();
+
+    constructor() {
+        this.route.post('/upload', function (req, res) {
+            console.log(req.body);
+            res.json({ ok: true });
+        });
+
+        this.route.post('/logar', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const usuarioLogado = usuarios.find(user => user.usuario == usuario && user.senha == senha);
+            if (!!usuarioLogado) {
+                res.json(buildUser(usuarioLogado, usuarioLogado.dataCriacao));
+                // res.json({
+                //     id: usuarioLogado.id,
+                //     nomeCompleto: usuarioLogado.nomeCompleto,
+                //     usuario: usuarioLogado.usuario,
+                //     dataCriacao: usuarioLogado.dataCriacao,
+                // });
+            } else {
+                res.status(404).json({
+                    error: 'Usuário ou senha inválida.'
+                });
+            }
+        });
+
+        this.route.post('/add/user', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const nomeCompleto = req.body.nomeCompleto;
+            const newUser = {
+                id: (usuarios.length + 1),
+                dataCriacao: getActualDate(),
+                usuario: usuario,
+                senha: senha,
+                nomeCompleto: nomeCompleto,
+                saldo: 0
+            };
+            usuarios.push(newUser);
+            res.json(newUser);
+        });
+
+        this.route.get('/users', function (req, res) {
+            res.json(usuarios.map(user => {
+                return buildUser(user, null);
+            }));
+        });
+
+        this.route.post('/registros', function (req, res) {
+            const itens: any[] = req.body;
+
+
+            itens.forEach(item => {
+                const stringToHash = (Math.floor(Math.random() * 1000) + 1).toString();
+                var hash = 0, i, chr;
+                if (stringToHash.length === 0) return hash;
+                for (i = 0; i < stringToHash.length; i++) {
+                    chr = stringToHash.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+
+                item.id = hash;
+                item.dataCriacao = getActualDate();
+                registros.push(item);
+            });
+            res.json(req.body);
+        });
+
+        this.route.get('/registros', function (req, res) {
+            res.json(registros);
+        });
+
+        this.route.get('/registros/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const totalPages = registros.length / count;
+            res.json({
+                totalResults: registros.length,
+                totalPages: Math.ceil(totalPages),
+                data: registros.slice((page - 1) * count, page * count)
+            });
+        });
+
+        this.route.get('/registros/comissionados/page/:page/count/:count/id-usuario/:idUsuario', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const idUsuario = parseFloat(req.params.idUsuario);
+            const registrosResponse = registros
+            .filter(item => !!item.transacao && !!item.transacao.geraComissao && (item.transacao.idUsuarioDestinatario == idUsuario || item.transacao.idUsuarioOrigem == idUsuario));
+            const totalPages = registrosResponse.length / count;
+            res.json({
+                totalResults: registrosResponse.length,
+                totalPages: Math.ceil(totalPages),
+                data: registrosResponse.slice((page - 1) * count, page * count)
+            });
+        });
+
+        this.route.get('/registros/pendentes/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const registrosResponse = registros.filter(item => !item.transacao);
+            const totalPages = registrosResponse.length / count;
+            res.json({
+                totalResults: registrosResponse.length,
+                totalPages: Math.ceil(totalPages),
+                data: registrosResponse.slice((page - 1) * count, page * count)
+            });
+        });
+
+        this.route.get('/registros/por-usuario/page/:page/count/:count/id-usuario/:idUsuario', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const idUsuario = parseFloat(req.params.idUsuario);
+            const registrosResponse = registros
+            .filter(item => !!item.transacao 
+                && (item.transacao.idUsuarioOrigem == idUsuario 
+                || item.transacao.idUsuarioDestinatario == idUsuario));
+
+            const totalPages = registrosResponse.length / count;
+            res.json({
+                totalResults: registrosResponse.length,
+                totalPages: Math.ceil(totalPages),
+                data: registrosResponse.slice((page - 1) * count, page * count)
+            });
+        });
+
+        this.route.get('/users/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const registrosResponse = usuarios.map(item => {
+                return buildUser(item, null);
+            });
+            const totalPages = registrosResponse.length / count;
+            res.json({
+                totalResults: registrosResponse.length,
+                totalPages: Math.ceil(totalPages),
+                data: registrosResponse.slice((page - 1) * count, page * count)
+            });
+        });
+
+        this.route.put('/registrar-transacao', (req, res) => {
+            const registro = req.body;
+            registros.forEach((item, index) => {
+                if (item.id == registro.id) {
+                    item.transacao = registro.transacao;
+                    item.descricaoPessoal = registro.descricaoPessoal;
+                    usuarios.find(user => user.id == registro.transacao.idUsuarioDestinatario).saldo += Math.abs(item.valor);
+                    usuarios.find(user => user.id == registro.transacao.idUsuarioOrigem).saldo -= Math.abs(item.valor);
+                }
+            });
+            res.json(registros.find(item => item.id == registro.id));
+        });
+
+        this.route.get('/registros-aprovados/id-usuario/:id', (req, res) => {
+            const idUsuario = req.params.id;
+            let registrosEntrada = registros.filter(item => !!item.transacao && item.transacao.idUsuarioDestinatario == idUsuario);
+            let registrosSaida = registros.filter(item => !!item.transacao && item.transacao.idUsuarioOrigem == idUsuario);
+            
+            let entradas = registrosEntrada.reduce((acc, act) => {
+                let b = Math.abs(act.valor);
+                return acc + b;
+            }, 0);
+
+            let saidas = registrosSaida.reduce((acc, act) => {
+                let b = Math.abs(act.valor);
+                return acc + b;
+            }, 0);
+
+            res.json({
+                entradas: entradas,
+                saidas: saidas,
+                saldo: entradas - saidas,
+                registrosEntrada: registrosEntrada,
+                registrosSaida: registrosSaida
+            });
+        });
+
+        this.route.get('/hash', (req, res) => {
+            const stringToHash = req.query.str;
+
+            var hash = 0, i, chr;
+            if (stringToHash.length === 0) return hash;
+            for (i = 0; i < stringToHash.length; i++) {
+                chr = stringToHash.charCodeAt(i);
+                hash = ((hash << 5) - hash) + chr;
+                hash |= 0; // Convert to 32bit integer
+            }
+
+            res.json({
+                hash: hash
+            });
+        });
+// =================================================================================
+        this.route.get('/page', function (req, res) {
+            res.sendFile('/Users/mateus/projetos/pocs/sorteador/index.html');
+        });
+        /* 
+        Este endpoint vai ser consumido pelo serviço de usuários
+        para gerar um token quando um usuário for cadastrado.
+        */
+        this.route.get('/auth', async (req: Request, res: Response) => {
+            const id = req.query.id;
+            createToken(res, () => { }, id);
+        });
+
+        /* 
+        Este endpoint vai ser consumido pelos demais
+        para validar um token.
+        */
+        this.route.get('/auth/validate', async (req: Request, res: Response) => {
+            validateToken(req, res, () => res.status(200).json({ msg: "tudo ok" }));
+        });
+
+        /* 
+        Este endpoint vai ser consumido pelo client
+        para retornar um token quando usuário logar na aplicação.
+        */
+        this.route.post('/auth/login', async (req: Request, res: Response) => {
+            try {
+                const { username, password } = req.body;
+                const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
+                if (!user) res.status(404).json({ error: 'Usuário não encontrado.' });
+                if (user.password != password) res.status(404).json({ error: 'Senha inválida.' });
+                createToken(res, () => { }, user);
+            } catch (err) {
+                res.status(404).json({ error: 'Usuário não encontrado.' });
+            }
+        });
+
+        this.route.post('/estoque', async (req: Request, res: Response) => {
+            try {
+                res.json({
+                    estoqueCd: 10
+                });
+            } catch (err) {
+                res.status(404).json({ error: 'Usuário não encontrado.' });
+            }
+        });
+
+        this.route.get('/teste', async (req: Request, res: Response) => {
+            res.sendFile('/home/mateus/projetos/ispforce/ispforte-teste/teste.html');
+        });
+
+
+        this.route.post('/poligono', (req, res) => {
+            const obj = req.body;
+            res.json(obj.cordenadas.some(item => this.isInside(item, item.length, { x: obj.lat, y: obj.lng })));
         });
 
         this.route.get('/planos', (req, res) => {
-
-
             res.json(
                 [
                     {
@@ -1283,7 +2044,32 @@ class Routes {
             );
         });
 
+        this.route.get('/chat-enviroments/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(provedor => provedor.provedorId == provedorId);
+            if (!provedor) res.status(404).json({
+                errorMessage: "Provedor não encontrado."
+            });
+            res.json(provedor);
+        });
 
+
+        this.route.post('/send-cordenadas/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(provedor => provedor.provedorId == provedorId);
+            if (!provedor) res.status(404).json({
+                errorMessage: "Provedor não encontrado."
+            });
+            provedor.enviroments.cordenadas = req.body;
+            res.json(req.body);
+        });
+
+        this.route.post('/change-color', (req, res) => {
+            console.log("req.body.color");
+            provedoresIspForce[0].enviroments.corPrimaria = req.body.color;
+            console.log(provedoresIspForce[0].enviroments.corPrimaria)
+            res.status(204);
+        });
 
     }
 
@@ -1399,3 +2185,17 @@ export async function findUserByUsername(username): Promise<UserModel> {
     return await http.get(baseUrl);
 }
 
+export const getActualDate = () => {
+    const offset = 0;
+    return new Date( new Date().getTime() + offset * 3600 * 1000);
+}
+
+export const buildUser = (user, data) => {
+    return {
+        id: user.id,
+        nomeCompleto: user.nomeCompleto,
+        usuario: user.usuario,
+        dataCriacao: !!data ? user.dataCriacao : getActualDate(),
+        saldo: user.saldo
+    }
+}
