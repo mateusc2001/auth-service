@@ -1,77 +1,67 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-
-    <!-- CSS Styles -->
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <title>KML Click Capture Sample</title>
     <style>
-        .speech {
-            border: 1px solid #DDD;
-            width: 300px;
+        html,
+        body {
+            height: 500px;
             padding: 0;
-            margin: 0
+            margin: 0;
         }
 
-        .speech input {
-            border: 0;
-            width: 240px;
-            display: inline-block;
-            height: 30px;
+        #map {
+            height: 500px;
+            width: 500px;
+            overflow: hidden;
+            float: left;
+            border: thin solid #333;
         }
 
-        .speech img {
-            float: right;
-            width: 40px
+        #capture {
+            height: 500px;
+            width: 500px;
+            overflow: hidden;
+            float: left;
+            background-color: #ECECFB;
+            border: thin solid #333;
+            border-left: none;
         }
     </style>
-
-
-
-    <!-- HTML5 Speech Recognition API -->
-    <script>
-        function startDictation() {
-
-            if (window.hasOwnProperty('webkitSpeechRecognition')) {
-
-                var recognition = new webkitSpeechRecognition();
-
-                recognition.continuous = false;
-                recognition.interimResults = false;
-
-                recognition.lang = "en-US";
-                recognition.start();
-
-                recognition.onresult = function (e) {
-                    document.getElementById('transcript').value
-                        = e.results[0][0].transcript;
-                    recognition.stop();
-                    document.getElementById('labnol').submit();
-                };
-
-                recognition.onerror = function (e) {
-                    recognition.stop();
-                }
-
-            }
-        }
-    </script>
-
-
 </head>
 
 <body>
+    <div id="map"></div>
+    <div id="capture"></div>
+    <script>
+        var map;
+        var src = 'http://localhost:1900/kmz';
 
-    <!-- Search Form -->
-    <form id="labnol" method="get" action="https://www.google.com/search">
-        <div class="speech">
-            <input type="text" name="q" id="transcript" placeholder="Speak" />
-            <img onclick="startDictation()" src="//i.imgur.com/cHidSVu.gif" />
-        </div>
-    </form>
+        function initMap() {
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: new google.maps.LatLng(-20.257753, -40),
+                zoom: 4,
+                mapTypeId: 'terrain'
+            });
+
+            var kmlLayer = new google.maps.KmlLayer(src, {
+                suppressInfoWindows: true,
+                preserveViewport: false,
+                map: map
+            });
+            kmlLayer.addListener('click', function (event) {
+                var content = event.featureData.infoWindowHtml;
+                var testimonial = document.getElementById('capture');
+                testimonial.innerHTML = content;
+            });
+        }
+    </script>
+    <script async
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAwS_sdUH2IizLS7hWV0NES1rTikvqlvq0&callback=initMap">
+        </script>
 </body>
 
 </html>
