@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import route from './routes';
 import bodyParser from 'body-parser';
+import contaRoute from './conta.route';
 
 class App {
     public express: express.Application;
@@ -34,6 +35,7 @@ class App {
 
     private routes(): void {
         this.express.use(route);
+        this.express.use('/conta', contaRoute);
     }
 }
 

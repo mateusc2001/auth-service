@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/cep-promise/dist/cep-promise.min.js"></script>
+  <link href='http://fonts.googleapis.com/css?family=Alfa+Slab+One' rel='stylesheet' type='text/css'>
+  <base href="/">
+  <title>Document</title>
+  <script>
+    let provedorId = Number(window.location.href.split('/').pop());
+    let provedorCompleto = null;
+
+    let messageList = [];
+    let etapa = null;
+    let cep = null;
+    let numeroDaCasa = null;
+    let locationHome = null;
+    let formatted_address = null;
+    let todosPlanos = [];
+    let planoSelecionado = null;
+    let nomeCompleto = null;
+    let cpf = null;
+    let celular = null;
+    let email = null;
+    let temDisponibilidade = null;
+    let provedorEtapaParaSalver = null;
+
+    let closed = !false;
+    function alterarEstado() {
+      if (closed) {
+        document.getElementById('container-btn-open-chat').style.visibility = 'hidden';
+        document.getElementById('container-chat-bot').style.visibility = 'visible';
+        document.getElementById('container-chat-bot').style.height = '550px';
+        enviarNovaMensagemEtapa();
+
+      } else {
+        document.getElementById('container-chat-bot').style.height = '0px';
+        setTimeout(() => {
+          document.getElementById('container-chat-bot').style.visibility = 'hidden';
+          document.getElementById('container-btn-open-chat').style.visibility = 'visible';
+        }, 400);
+      }
+      closed = !closed;
+    }
+
+    function buildEtapa(numeroEtapa, opcoes, txtMensagem, errorMessage) {
+      return {
+        numeroEtapa: numeroEtapa,
+        opcoes: opcoes,
+        textoMensagem: txtMensagem,
+        errorMessage: errorMessage
+      }
+    }
+
+    async function atualizarEtapa(indexEtapa) {
+      if (!!indexEtapa) {
+        etapa = await getEtapa(indexEtapa);
+      } else {
+        etapa = etapa == null ? await getEtapa(1) : await getEtapa(getEtapaAtual().numeroEtapa + 1);
+      }
+
+    }
+
+    function sendMessage(isClientMessage, txtMensagem, opcoes) {
+      if (isClientMessage) {
+        buildClientMessage(txtMensagem);
+      } else {
+        buildBotMessage(txtMensagem, opcoes);
+      }
+      updateScroll();
+    }
+
+    function updateScroll() {
+      var element = document.getElementById('container-conversation');
+      element.scrollTo({
+        top: element.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+
+    function buildClientMessage(mensagem) {
+      let clientMessage = document.createElement('div');
+      clientMessage.classList.add('client-message');
+
+      let spanClientTextMessage = document.createElement('span');
+      spanClientTextMessage.innerText = mensagem;
+      spanClientTextMessage.classList.add('span-client-text-message');
+      spanClientTextMessage.id = 'span-client-text-message';
+
+      let spanHorario = document.createElement('span');
+      spanHorario.innerText = getHorarioAtualMensagem();
+      spanHorario.classList.add('span-horario');
+
+      let containerConversation = document.getElementById('container-conversation');
+
+      clientMessage.appendChild(spanClientTextMessage);
+      clientMessage.appendChild(spanHorario);
+
+      containerConversation.appendChild(clientMessage);
+    }
+
+    function buildBotMessage(mensagem, opcoes) {
+      let botMessage = document.createElement('div');
+      botMessage.classList.add('bot-message');
+
+      let divImageBotMessage = document.createElement('div');
+      divImageBotMessage.classList.add('div-image-bot-message');
+
+      let imgBotMessage = document.createElement('img');
+      imgBotMessage.classList.add('img-bot-message');
+      imgBotMessage.src = 'https://static.bancointer.com.br/blog/banner-images/240be249-8ca8-4934-8364-d4a02b2e0d68.jpg';
+      imgBotMessage.src = provedorCompleto.enviroments.urlImagem;
+
+
+      let divBotMessage = document.createElement('div');
+      divBotMessage.classList.add('div-bot-message');
+
+      let divBotTextMessage = document.createElement('div');
+      divBotTextMessage.classList.add('div-bot-text-message');
+
+      let spanBotTextMessage = document.createElement('span');
+      spanBotTextMessage.classList.add('span-bot-text-message');
+      spanBotTextMessage.innerText = mensagem;
+
+      let spanHorario = document.createElement('span');
+      spanHorario.classList.add('span-horario');
+      spanHorario.innerText = getHorarioAtualMensagem();
+
+      divImageBotMessage.appendChild(imgBotMessage);
+      botMessage.appendChild(divImageBotMessage);
+
+      divBotTextMessage.appendChild(spanBotTextMessage);
+      if (!!opcoes && opcoes.length > 0) {
+        let hr = document.createElement('hr');
+
+        let optionsTextChat = document.createElement('div');
+        optionsTextChat.classList.add('options-text-chat');
+
+        opcoes.forEach(element => {
+          let span = document.createElement('span');
+          span.classList.add('option-txt');
+          span.id = 'option-txt';
+          span.innerText = element;
+          span.addEventListener('click', () => validarResposta(element, etapa));
+          optionsTextChat.appendChild(span)
+        });
+        if ((!!mensagem && mensagem.length > 0) || (!mensagem)) divBotTextMessage.appendChild(hr);
+        divBotTextMessage.appendChild(optionsTextChat);
+      }
+
+      divBotMessage.appendChild(divBotTextMessage);
+      divBotMessage.appendChild(spanHorario);
+      botMessage.appendChild(divBotMessage);
+
+      document.getElementById('container-conversation').appendChild(botMessage);
+    }
+
+    async function iniciarConversa() {
+      return axios.post('http://localhost:1900/conversa/' + provedorCompleto.provedorId)
+        .then(res => {
+          provedorEtapaParaSalver = (res.data);
+          console.log(provedorEtapaParaSalver)
+        });
+    }
+
+    async function validarResposta(resposta, etapa) {
+      switch (etapa.numeroEtapa) {
+        case 1:
+          if (resposta.toUpperCase() == etapa.opcoes[0].toUpperCase()) {
+            iniciarConversa().then(() => {
+              sendMessage(true, resposta, []);
+              atualizarEtapa().then(() => {
+                enviarNovaMensagemEtapa();
+              });
+            });
+
+          } else {
+            window.open(provedorCompleto.enviroments.linkAreaDeCliente);
+            sendMessage(true, resposta, []);
+            // sendMessage(false, 'Então já conhece a casa.', []);
+          }
+          break;
+        case 2:
+          if (!!resposta && resposta.length == 8) {
+            cep = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(false, getEtapaAtual().errorMessage, []);
+          }
+          break;
+        case 3:
+          if (!isNaN(resposta)) {
+            numeroDaCasa = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(false, getEtapaAtual().errorMessage, []);
+          }
+          break;
+        case 4:
+          if (resposta.toUpperCase() == etapa.opcoes[0].toUpperCase()) {
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => {
+              enviarNovaMensagemEtapa();
+              if (temDisponibilidade) {
+                setTimeout(() => {
+                  buildCarrossel();
+                }, 1500);
+              }
+            });
+          } else {
+
+          }
+          break;
+        case 5:
+          if (todosPlanos.some(item => item.id == resposta.id)) {
+            planoSelecionado = resposta;
+            sendMessage(true, resposta.titulo, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(false, 'Escolha uma opção válida.', []);
+            setTimeout(() => {
+              buildCarrossel();
+            }, 1500);
+          }
+          break;
+        case 6:
+          if (resposta.toUpperCase() == etapa.opcoes[0].toUpperCase()) {
+            sendMessage(true, resposta, []);
+            setTimeout(() => {
+              sendMessage(false, `Plano selecionado: ${planoSelecionado.titulo} ${planoSelecionado.velocidade} MEGA \nR$${planoSelecionado.valor} ao ${planoSelecionado.periodoDeCobranca}`, []);
+              setTimeout(() => {
+                sendMessage(false, 'Certo... Agora vou precisar de alguns dados pessoais.', []);
+                setTimeout(() => {
+                  atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+                }, 700);
+              }, 700);
+            }, 700);
+          } else {
+            sendMessage(false, 'Está bem, selecione a opção desejada.', []);
+            setTimeout(() => {
+              atualizarEtapa(5).then(() => buildCarrossel());
+            }, 1500);
+          }
+          break;
+
+        case 7:
+          if (!!resposta && resposta.length > 3) {
+            nomeCompleto = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(true, resposta, []);
+            sendMessage(false, 'Informe pelo menos 3 dígitos.', []);
+          }
+          break;
+
+        case 8:
+          if (!!resposta && resposta.length > 3) {
+            cpf = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(true, resposta, []);
+            sendMessage(false, 'Informe pelo menos 3 dígitos.', []);
+          }
+          break;
+
+        case 9:
+          if (!!resposta && resposta.length > 3) {
+            celular = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(true, resposta, []);
+            sendMessage(false, 'Informe pelo menos 3 dígitos.', []);
+          }
+          break;
+
+        case 10:
+          if (!!resposta && resposta.length > 3 && resposta.toUpperCase() != getEtapaAtual().opcoes[0]) {
+            email = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else if (resposta.toUpperCase() != getEtapaAtual().opcoes[0]) {
+            email = 'Não informado.';
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(true, resposta, []);
+            sendMessage(false, 'Informe pelo menos 3 dígitos.', []);
+          }
+          break;
+        case 11:
+          if (resposta.toUpperCase() == getEtapaAtual().opcoes[0].toUpperCase()) {
+            email = resposta;
+            sendMessage(true, resposta, []);
+            atualizarEtapa().then(() => enviarNovaMensagemEtapa());
+          } else {
+            sendMessage(false, 'Está bem, informe os dados novamente com mais atenção.', []);
+            setTimeout(() => {
+              atualizarEtapa(7).then(() => enviarNovaMensagemEtapa());
+            }, 1500);
+          }
+          break;
+
+        case 12:
+          if (resposta.toUpperCase() == getEtapaAtual().opcoes[1].toUpperCase()) {
+
+            const mess = 'Mensagem teste';
+            // sendEvent({
+            //     codigo: 1,
+            //     page: 'https://api.whatsapp.com/send?phone=5551982008358&text='+ encodeURI(mess)
+            // });
+            window.open('https://api.whatsapp.com/send?phone=55' + provedorCompleto.enviroments.numeroWhatsappCliente + '&text=' + encodeURI(provedorCompleto.enviroments.mensagemWhatsappCliente), '_blank');
+          } else {
+            sendMessage(false, 'Está bem, informe os dados novamente com mais atenção.', []);
+            setTimeout(() => {
+              atualizarEtapa(7).then(() => enviarNovaMensagemEtapa());
+            }, 1500);
+          }
+          break;
+      }
+    }
+
+    async function atualizarStatus() {
+      await axios.put('http://localhost:1900/conversa/' + provedorCompleto.provedorId, provedorEtapaParaSalver);
+    }
+
+    function enviarNovaMensagemEtapa() {
+      const etapaAtual = getEtapaAtual();
+      if (getEtapaAtual().numeroEtapa != 1) {
+        provedorEtapaParaSalver.etapa = etapaAtual.numeroEtapa;
+        atualizarStatus();
+      }
+      sendMessage(false, etapaAtual.textoMensagem, etapaAtual.opcoes);
+    }
+
+    function getEtapaAtual() {
+      return etapa;
+    }
+
+    function getHorarioAtualMensagem() {
+      return ((new Date).getHours() + ':' + (new Date).getMinutes() + ' ' + ((new Date).getHours() > 12 ? 'PM' : 'AM'));
+    }
+
+    function sendEvent(body) {
+      parent.postMessage(body, "http://localhost:4200");
+    }
+
+    async function getEtapa(indexEtapa) {
+      const etapas = {
+        1: () => buildEtapa(1, ['Sim, quero contratar internet', 'Sou cliente'], 'Olá! Gostaria de ajuda para contratar seu plano?', 'Por favor, selecione uma opção válida.'),
+        2: () => {
+          document.getElementById('input-dados').type = 'number';
+          return buildEtapa(2, [], 'Agora preciso que você digite o CEP do endereço que quer contratar internet. \n\nObs.: Somento números', 'Por favor, informe um CEP válido.');
+        },
+        3: () => buildEtapa(3, [], 'Qual o número do seu endereço? \n\n Obs.: Sem complemento, somente o número da casa ou apartamento.', 'Por favor, número válido.'),
+        4: () => getEnderecoFormatado(cep, numeroDaCasa).then(res => {
+          document.getElementById('input-dados').type = 'text';
+          return buildEtapa(4, ['Sim, estão certos.', 'Não, corrigir.'], 'O endereço abaixo está correto? \n\n' + res, '.');
+        }),
+        5: () => {
+          const respostaSucesso = 'Oba, uma ótima notícia. Temos rede disponível para instalação no seu endereço. \n\n Vou buscar os planos que tenho disponíveis. Aguarde um instante.';
+          return verificarDisponibilidade(locationHome.lat, locationHome.lng)
+            .then(res => {
+              temDisponibilidade = res.data;
+              const response = buildEtapa(5, [], res.data ? respostaSucesso : 'Ops, infelizmente não temos disponibilidade na sua região.', '');
+              return response;
+            });
+        },
+        6: () => {
+          return buildEtapa(6, ['É isso', 'Quero trocar'], `Você selecionou o ${planoSelecionado.titulo} por R$${planoSelecionado.valor} ao ${planoSelecionado.periodoDeCobranca}`, '');
+        },
+        7: () => {
+          return buildEtapa(7, [], `Qual seu nome completo?`, '');
+        },
+        8: () => {
+          document.getElementById('input-dados').type = 'number';
+          return buildEtapa(8, [], `Qual seu CPF? \n\n Obs.: Apenas os números`, '');
+        },
+        9: () => {
+          return buildEtapa(9, [], `Qual o número do seu celular com DDD?`, '');
+        },
+        10: () => {
+          document.getElementById('input-dados').type = 'text';
+          return buildEtapa(10, ['Não tenho e-mail'], `Qual o seu e-mail?`, '');
+        },
+        11: () => {
+          return buildEtapa(11, ['Sim, quero finalizar o pedido.', 'Não, quero corrigir.'], `Agora preciso que você confirme os dados. \n Nome: ${nomeCompleto} \nCPF: ${cpf} \ncelular: ${celular} \nemail: ${email}`, '');
+        },
+        12: () => {
+          return buildEtapa(12, ['Detalhes do pedido', 'Finalizar o pedido'], ``, '');
+        }
+      }
+
+      return etapas[indexEtapa]();
+    }
+
+    function buildCarrossel() {
+      // axios.get('http://localhost:1900/planos')
+      //     .then(res => {
+
+
+      //     });
+      const response = provedorCompleto.enviroments.planos;
+      todosPlanos = response;
+      const containerMainCarrosel = document.createElement('div');
+      containerMainCarrosel.classList.add('container-main-carrosel');
+
+      const obj = response.map(item => {
+        const liList = buildLi(item.contempla, item.naoContempla);
+        const id = item.id;
+        const etapaAct = getEtapaAtual();
+        return `
+                        <div class="carrosel-planos">
+                            <div class="plano-internet">
+                                <div class="cabecalho-container-plano" style="background-color: ${item.color};">
+                                    <span class="span-titulo-container-plano">${item.titulo}</span>
+                                </div>
+                                <div class="container-detalhamento-plano">
+                                    <ul class="ul-itens-do-plano">
+                                        <li><span class="boldinho">R$${item.valor}</strong>/ <span class="boldinho">${item.periodoDeCobranca} - ${item.velocidade} MEGA </span></li>
+                                        ${liList}
+                                    </ul>
+                                </div>
+                                <div class="container-btn-adquirir-plano">
+                                    <button class="btn-contratar" id="btn-click-${item.id}" style="background-color: ${item.color};">Contratar</button>
+                                </div>
+                            </div>
+                        </div>
+                        `;
+      });
+      resposta = '';
+      obj.forEach(item => resposta = resposta + item);
+      containerMainCarrosel.innerHTML = resposta;
+      document.getElementById('container-conversation').appendChild(containerMainCarrosel);
+      todosPlanos.forEach(item => {
+        document.getElementById(`btn-click-${item.id}`).addEventListener('click', () => validarResposta(item, getEtapaAtual()));
+      })
+      updateScroll();
+    }
+
+    function buildLi(contempla, naoContempla) {
+      resposta = '';
+      contempla.forEach(item => resposta = resposta + `<li><span class="material-icons" style="color: green;">done</span> ${item}</li>`)
+      naoContempla.forEach(item => resposta = resposta + `<li><span class="material-icons" style="color: red;">close</span> ${item}</li>`)
+      return resposta;
+    }
+
+    function verificarDisponibilidade(x, y) {
+      const obj = {
+        lat: x,
+        lng: y,
+        cordenadas: provedorCompleto.enviroments.cordenadas
+      };
+      return axios.post(`http://localhost:1900/poligono`, obj);
+    }
+
+    function getEnderecoFormatado(cepDestino, numeroCasa) {
+      return axios.get(`https://viacep.com.br/ws/${cep}/json/`)
+        .then(response => {
+          const res = response.data;
+          return (numeroCasa + ', ' + res.logradouro + ' - ' + res.bairro + ', ' + res.localidade);
+        })
+        .then(address => axios.get(`https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURI(address)}&key=AIzaSyAwS_sdUH2IizLS7hWV0NES1rTikvqlvq0`))
+        .then(result => {
+          formatted_address = result.data.results[0].formatted_address;
+          locationHome = result.data.results[0].geometry.location;
+          return formatted_address;
+        });
+    }
+
+    function enviar() {
+      validarResposta(document.getElementById('input-dados').value, getEtapaAtual());
+      document.getElementById('input-dados').value = '';
+    }
+
+    async function onInit() {
+      const currentIframeHref = new URL(document.location.href);
+      const urlOrigin = currentIframeHref.origin;
+      const urlFilePath = decodeURIComponent(currentIframeHref.pathname);
+      console.log(currentIframeHref);
+      console.log(urlOrigin);
+      console.log(urlFilePath);
+      await getEnviroments();
+      axios.put('http://localhost:1900/add-impressao/' + provedorCompleto.provedorId);
+      // document.getElementById('container-btn-open-chat').style.visibility = 'hidden';
+      // document.getElementById('container-chat-bot').style.visibility = 'visible';
+      // document.getElementById('container-chat-bot').style.height = '550px';
+      atualizarEtapa().then(() => alterarEstado());
+      const inputEle = document.getElementById('input-dados');
+      inputEle.addEventListener('keyup', function (e) {
+        var key = e.which || e.keyCode;
+        if (key == 13) { // codigo da tecla enter
+          enviar();
+        }
+      });
+    }
+
+    function getEnviroments() {
+      return axios.get('http://localhost:1900/chat-enviroments/' + provedorId)
+        .then(res => {
+          provedorCompleto = res.data;
+          aplicarEnviroments(provedorCompleto);
+        }, err => console.log('Erro de merda::::::::::: ', err));
+    }
+
+    function aplicarEnviroments(provedor) {
+      colorir(provedorCompleto.enviroments.corPrimaria);
+      document.getElementById('title-title-modal-chat').innerText = provedor.provedorName;
+    }
+
+    function colorir(color) {
+      for (let i = 0; i < document.getElementsByClassName('btn-chat').length; i++) {
+        document.getElementsByClassName('btn-chat')[i].style.background = color;
+      }
+      for (let i = 0; i < document.getElementsByClassName('header-chat').length; i++) {
+        document.getElementsByClassName('header-chat')[i].style.background = color;
+      }
+      for (let i = 0; i < document.getElementsByClassName('btn-send').length; i++) {
+        document.getElementsByClassName('btn-send')[i].style.background = color;
+      }
+      for (let i = 0; i < document.getElementsByClassName('span-client-text-message').length; i++) {
+        document.getElementsByClassName('span-client-text-message')[i].style.background = color;
+      }
+
+      for (let i = 0; i < document.getElementsByClassName('option-txt').length; i++) {
+        let optionTxt = document.getElementsByClassName('option-txt')[i];
+        optionTxt.style.color = color;
+        optionTxt.style.borderColor = color;
+        optionTxt.style.background = 'transparent';
+
+        // optionTxt.addEventListener("mouseover", () => {
+        //     optionTxt.style.color = 'white';
+        //     optionTxt.style.borderColor = 'blue';
+        //     optionTxt.style.backgroundColor = 'blue';
+        //     optionTxt.style.background = 'blue';
+        // });
+        // optionTxt.addEventListener("mouseout", () => {
+        //     optionTxt.style.color = 'red';
+        //     optionTxt.style.borderColor = 'red';
+        //     optionTxt.style.backgroundColor = 'blue';
+        //     optionTxt.style.background = 'blue';
+        // });
+      }
+      setTimeout(() => {
+        colorir(color);
+      }, 50);
+    }
+
+  </script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      outline: none;
+    }
+
+    .main-container-bot {
+      position: absolute;
+      right: 15px;
+      bottom: 15px;
+    }
+
+    .btn-chat {
+      margin: 20px 10px 0 0;
+      border-radius: 100px;
+      width: 70px;
+      height: 70px;
+      border: none;
+      background: none;
+      background-color: #3dbd3e;
+      font-size: 30px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .chat-class {
+      font-size: 30px;
+    }
+
+    .container-chat-bot {
+      width: 420px;
+      max-width: 100%;
+      height: 0px;
+      transition: .4s;
+      visibility: hidden;
+      border-radius: 5px;
+      overflow: hidden;
+      box-shadow:
+        0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+        0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+        0 12.5px 10px rgba(0, 0, 0, 0.06),
+        0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+        0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+        0 100px 80px rgba(0, 0, 0, 0.12);
+    }
+
+    .container-btn-open-chat {
+      width: 420px;
+      max-width: 100%;
+      height: 100px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .header-chat {
+      width: 100%;
+      height: 10%;
+      background-color: #3dbd3e;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0px 10px;
+    }
+
+    .body-chat {
+      background-color: white;
+      width: 100%;
+      height: 90%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .close-chat-icon {
+      cursor: pointer;
+      color: white;
+    }
+
+    .title-modal-chat {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-around;
+      align-items: flex-start;
+      color: white;
+    }
+
+    .title-title-modal-chat {
+      font-size: 16px;
+      font-weight: 300;
+    }
+
+    .subtitle-title-modal-chat {
+      font-size: 12px;
+      font-weight: 300;
+    }
+
+    .container-conversation {
+      width: 100%;
+      height: 87%;
+      overflow-y: scroll;
+      overflow-x: hidden;
+    }
+
+    .container-input {
+      width: 100%;
+      height: 13%;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0 10px;
+      box-shadow: 0px 4px 20px gray;
+    }
+
+    .input-conversation {
+      width: 85%;
+      height: 100%;
+      border: none;
+      padding: 0 10px;
+    }
+
+    .btn-send {
+      border-radius: 100px;
+      width: 50px;
+      height: 50px;
+      border: none;
+      background: none;
+      background-color: #3dbd3e;
+      font-size: 20px;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .client-message {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: flex-end;
+    }
+
+    .span-client-text-message {
+      margin: 15px 10px 10px 5px;
+      padding: 15px;
+      border-radius: 15px 15px 2px 15px;
+      box-shadow: 0px 0px 13px 2px rgba(0, 0, 0, 0.3);
+      background-color: #3dbd3e;
+      color: white;
+    }
+
+    .span-horario {
+      margin: 0 10px;
+      color: #6a6a6a;
+      font-size: 12px;
+    }
+
+    .bot-message {
+      width: 100%;
+      display: flex;
+      justify-content: flex-start;
+      align-items: flex-start;
+      margin-top: 10px;
+      margin-left: 10px;
+      margin-bottom: 10px;
+    }
+
+    .div-bot-text-message {
+      margin: 0px 10px 10px 10px;
+      padding: 15px;
+      border-radius: 2px 15px 15px 15px;
+      box-shadow: 0px 0px 13px 2px rgba(0, 0, 0, 0.3);
+      background-color: white;
+    }
+
+    .span-bot-text-message {
+      color: black;
+    }
+
+    .span-client-text-message,
+    .div-bot-text-message {
+      max-width: 75%;
+    }
+
+    .options-text-chat {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    hr {
+      margin: 15px 0px;
+    }
+
+    .options-text-chat .option-txt {
+      cursor: pointer;
+      border: 2px solid #3dbd3e;
+      color: #3dbd3e;
+      border-radius: 100px;
+      padding: 10px;
+      margin: 5px;
+      transition: .3s;
+    }
+
+    .option-txt:hover {
+      box-shadow: 0px 0px 5px 2px rgba(0, 0, 0, 0.2);
+      /* background-color: #3dbd3e; */
+      /* color: white; */
+    }
+
+    .img-bot-message {
+      width: 40px;
+      height: 40px;
+      border-radius: 100px;
+    }
+
+    .div-bot-message {
+      display: flex;
+      justify-content: flex-start;
+      flex-direction: column;
+    }
+
+    @media only screen and (max-width: 500px) {
+      .container-chat-bot {
+        width: 330px;
+      }
+
+      .main-container-bot {
+        right: -100px;
+      }
+    }
+
+    .carrosel-planos {
+      min-width: 300px;
+      height: 400px;
+      padding: 15px;
+    }
+
+    .plano-internet {
+      width: 100%;
+      height: 100%;
+      box-shadow:
+        0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+        0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+        0 12.5px 10px rgba(0, 0, 0, 0.06),
+        0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+        0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+        0 100px 80px rgba(0, 0, 0, 0.12);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .cabecalho-container-plano {
+      height: 10%;
+      width: 100%;
+      background-color: #f28e34;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .span-titulo-container-plano {
+      color: white;
+      font-weight: 300;
+    }
+
+    .container-detalhamento-plano {
+      height: 75%;
+      width: 100%;
+    }
+
+    .container-btn-adquirir-plano {
+      height: 15%;
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .btn-contratar {
+      padding: 7px 20px;
+      border-radius: 100px;
+      border: none;
+      color: white;
+      font-size: 16px;
+      font-weight: 200;
+      background-color: #f28e34;
+      box-shadow:
+        0 2.8px 2.2px rgba(0, 0, 0, 0.034),
+        0 6.7px 5.3px rgba(0, 0, 0, 0.048),
+        0 12.5px 10px rgba(0, 0, 0, 0.06),
+        0 22.3px 17.9px rgba(0, 0, 0, 0.072),
+        0 41.8px 33.4px rgba(0, 0, 0, 0.086),
+        0 100px 80px rgba(0, 0, 0, 0.12);
+      cursor: pointer;
+    }
+
+    .ul-itens-do-plano {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      overflow-y: auto;
+    }
+
+    .ul-itens-do-plano li {
+      height: 40px;
+      width: 80%;
+      margin: auto;
+      font-size: 14px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid rgba(128, 128, 128, 0.267);
+      padding: 5px;
+    }
+
+    .container-main-carrosel {
+      overflow-x: scroll;
+      display: flex;
+    }
+
+    .boldinho {
+      font-weight: 500;
+      font-size: 16px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      transition: .3s;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      transition: .3s;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(136, 136, 136, 0.466);
+      transition: .3s;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: #888;
+      transition: .3s;
+    }
+
+    ::-webkit-scrollbar {}
+
+    ::-webkit-scrollbar-button {}
+
+    ::-webkit-scrollbar-track {}
+
+    ::-webkit-scrollbar-track-piece {}
+
+    ::-webkit-scrollbar-thumb {
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    ::-webkit-scrollbar-corner {}
+
+    ::-webkit-resizer {}
+  </style>
+</head>
+
+<body onload="onInit()">
+  <section class="main-container-bot" id="main-container-bot">
+    <div class="container-btn-open-chat" id="container-btn-open-chat">
+      <button class="btn-chat" onclick="alterarEstado()" id="btn-chat">
+        <span class="material-icons chat-class">
+          chat
+        </span>
+      </button>
+    </div>
+
+    <div class="container-chat-bot" id="container-chat-bot">
+      <div class="header-chat" id="header-chat">
+        <div class="title-modal-chat">
+          <span class="title-title-modal-chat" id="title-title-modal-chat">Assistente virtual</span>
+          <span class="subtitle-title-modal-chat">online</span>
+        </div>
+        <span class="material-icons close-chat-icon" onclick="alterarEstado()">
+          close
+        </span>
+      </div>
+      <div class="body-chat">
+        <div class="container-conversation" id="container-conversation">
+
+        </div>
+        <div class="container-input">
+          <input type="text" id="input-dados" keyup.enter="enviar()" class="input-conversation"
+            placeholder="Digite sua mensagem aqui" autocomplete="off">
+          <button class="btn-send" id="btn-send" onclick="enviar()">
+            <span class="material-icons">
+              send
+            </span>
+          </button>
+        </div>
+      </div>
+  </section>
+</body>
+
+</html>

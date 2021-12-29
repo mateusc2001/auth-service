@@ -1,0 +1,446 @@
+// =================================================================================
+        this.route.get('/page', function (req, res) {
+            res.sendFile('/Users/mateus/projetos/pocs/sorteador/index.html');
+        });
+        /* 
+        Este endpoint vai ser consumido pelo serviço de usuários
+        para gerar um token quando um usuário for cadastrado.
+        */
+        this.route.get('/auth', async (req: Request, res: Response) => {
+            const id = req.query.id;
+            createToken(res, () => { }, id);
+        });
+
+        /* 
+        Este endpoint vai ser consumido pelos demais
+        para validar um token.
+        */
+        this.route.get('/auth/validate', async (req: Request, res: Response) => {
+            validateToken(req, res, () => res.status(200).json({ msg: "tudo ok" }));
+        });
+
+        /* 
+        Este endpoint vai ser consumido pelo client
+        para retornar um token quando usuário logar na aplicação.
+        */
+        this.route.post('/auth/login', async (req: Request, res: Response) => {
+            try {
+                const { username, password } = req.body;
+                const user: UserModel = JSON.parse((await findUserByUsername(username)).toString());
+                if (!user) res.status(404).json({ error: 'Usuário não encontrado.' });
+                if (user.password != password) res.status(404).json({ error: 'Senha inválida.' });
+                createToken(res, () => { }, user);
+            } catch (err) {
+                res.status(404).json({ error: 'Usuário não encontrado.' });
+            }
+        });
+
+        this.route.post('/estoque', async (req: Request, res: Response) => {
+            try {
+                res.json({
+                    estoqueCd: 10
+                });
+            } catch (err) {
+                res.status(404).json({ error: 'Usuário não encontrado.' });
+            }
+        });
+
+        this.route.get('/teste', async (req: Request, res: Response) => {
+            res.sendFile('/Users/mateuscamargo/projetos/ispforce/poc-bot/teste.html');
+        });
+
+
+        this.route.post('/poligono', (req, res) => {
+            const obj = req.body;
+            res.json(obj.cordenadas.some(item => this.isInside(item, item.length, { x: obj.lat, y: obj.lng })));
+        });
+
+        this.route.get('/planos', (req, res) => {
+            res.json(
+                [
+                    {
+                        "id": 1,
+                        "titulo": "Plano básico",
+                        "valor": 10,
+                        "periodoDeCobranca": "Mês",
+                        "velocidade": 120,
+                        "color": "#00000",
+                        "contempla": [
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee"
+                        ],
+                        "naoContempla": [
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee"
+                        ]
+                    },
+                    {
+                        "id": 2,
+                        "titulo": "Plano intermediário",
+                        "valor": 10,
+                        "periodoDeCobranca": "Mês",
+                        "color": "#982176",
+                        "velocidade": 120,
+                        "contempla": [
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee",
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online"
+                        ],
+                        "naoContempla": [
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee"
+                        ]
+                    },
+                    {
+                        "id": 3,
+                        "titulo": "Plano completo",
+                        "valor": 10,
+                        "periodoDeCobranca": "Mês",
+                        "color": "#571665",
+                        "velocidade": 120,
+                        "contempla": [
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee",
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO"
+                        ],
+                        "naoContempla": [
+                            "McAfee"
+                        ]
+                    },
+                    {
+                        "id": 4,
+                        "titulo": "Plano premium",
+                        "valor": 10,
+                        "periodoDeCobranca": "Mês",
+                        "color": "#571665",
+                        "velocidade": 120,
+                        "contempla": [
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee",
+                            "WiFi Plus Grátis",
+                            "NOW - Conteúdos Online",
+                            "Claro Vídeo",
+                            "SKEELO",
+                            "McAfee"
+                        ],
+                        "naoContempla": []
+                    }
+                ]
+            );
+        });
+
+        this.route.get('/chat-enviroments/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(provedor => provedor.provedorId == provedorId);
+            if (!provedor) res.status(404).json({
+                errorMessage: "Provedor não encontrado."
+            });
+            res.json(provedor);
+        });
+
+
+        this.route.post('/send-cordenadas/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(provedor => provedor.provedorId == provedorId);
+            if (!provedor) res.status(404).json({
+                errorMessage: "Provedor não encontrado."
+            });
+            provedor.enviroments.cordenadas = req.body;
+            res.json(req.body);
+        });
+
+        this.route.post('/change-color/:provedorId', (req, res) => {
+            console.log("req.body.color");
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: "Provedor não encontrado" });
+            provedor.enviroments.corPrimaria = req.body.color;
+            res.status(204);
+        });
+
+        this.route.post('/edit-basic-infos/:provedorId', (req, res) => {
+            const request = req.body;
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: "Provedor não encontrado" });
+            provedor.provedorName = request.provedorName;
+            provedor.enviroments.linkAreaDeCliente = request.linkAreaDeCliente;
+            provedor.enviroments.numeroWhatsappCliente = request.numeroWhatsappCliente;
+            provedor.enviroments.mensagemWhatsappCliente = request.mensagemWhatsappCliente;
+            res.status(204).send();
+        });
+
+        this.route.get('/site', (req, res) => {
+            res.sendFile('/Users/mateuscamargo/projetos/ispforce/poc-bot/teste.html');
+        });
+
+        this.route.put('/add-impressao/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            provedor.metricas.impressoes.push({
+                dateTime: getActualDate()
+            });
+            res.status(204).send();
+        });
+
+        this.route.get('/impressoes/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            res.json(provedor.metricas.impressoes);
+        });
+
+        this.route.post('/conversa/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            const novaConversa = {
+                id: getHash(),
+                dataInicio: getActualDate(),
+                etapas: [
+                    {
+                        horario: getActualDate(),
+                        etapa: 1
+                    }
+                ]
+            }
+            provedor.metricas.conversas.push(novaConversa);
+            res.json(novaConversa);
+        });
+
+        this.route.put('/conversa/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            const bodyReq = req.body;
+            const conversa = provedor.metricas.conversas.find(conversa => conversa.id == bodyReq.id);
+            conversa.etapas.push({
+                horario: getActualDate(),
+                etapa: bodyReq.etapa
+            });
+            res.json(conversa);
+        });
+
+        this.route.get('/metricas/:provedorId', (req, res) => {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            const calcularPercentual = !!provedor.metricas.conversas && provedor.metricas.conversas.length > 0;
+            const response = {
+                impressoes: {
+                    totalImpressoes: provedor.metricas.impressoes.length,
+                    ultimasImpressoes: Number((getUltimasImpressoes(provedorId).length * 100 / provedor.metricas.impressoes.length).toFixed(2))
+                },
+                conversasIniciadas: {
+                    totalConversas: provedor.metricas.conversas.length,
+                    ultimasConversas: Number((getUltimasConversas(provedorId).length * 100 / provedor.metricas.conversas.length).toFixed(2))
+                },
+                percentualPorEtapa: [
+                    {
+                        etapa: 2,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 2) : 0
+                    },
+                    {
+                        etapa: 3,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 3) : 0
+                    },
+                    {
+                        etapa: 4,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 4) : 0
+                    },
+                    {
+                        etapa: 5,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 5) : 0
+                    },
+                    {
+                        etapa: 6,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 6) : 0
+                    },
+                    {
+                        etapa: 7,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 7) : 0
+                    },
+                    {
+                        etapa: 8,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 8) : 0
+                    },
+                    {
+                        etapa: 9,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 9) : 0
+                    },
+                    {
+                        etapa: 10,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 10) : 0
+                    },
+                    {
+                        etapa: 11,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 11) : 0
+                    },
+                    {
+                        etapa: 12,
+                        percentual: calcularPercentual ? getPercentualNaEtapa(provedor.metricas.conversas, 12) : 0
+                    }
+                ]
+            };
+            res.json(response);
+        });
+
+        this.route.post('/logar/ispforce', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const usuarioLogado = provedoresIspForce.find(provedor => provedor.dadosAcesso.usuario == usuario && provedor.dadosAcesso.senha == senha);
+            if (!!usuarioLogado) {
+                res.json(usuarioLogado);
+            } else {
+                res.status(404).json({
+                    error: 'Usuário ou senha inválida.'
+                });
+            }
+        });
+
+        this.route.post('/add/provedor', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const novoProvedor = {
+                "provedorId": getHash(),
+                "provedorName": "",
+                "metricas": {
+                    "impressoes": [],
+                    "conversas": []
+                },
+                "dadosAcesso": {
+                    "usuario": usuario,
+                    "senha": senha
+                },
+                "enviroments": {
+                    "corPrimaria": "",
+                    "urlImagem": "https://static.vecteezy.com/system/resources/previews/002/275/847/original/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg",
+                    "cordenadas": [],
+                    "numeroWhatsappCliente": "",
+                    "mensagemWhatsappCliente": "",
+                    "linkAreaDeCliente": "",
+                    "planos": []
+                }
+            };
+            provedoresIspForce.push(novoProvedor);
+            res.json(novoProvedor);
+        });
+
+        this.route.post('/add/plano/:provedorId', function (req, res) {
+            const provedorId = Number(req.params.provedorId);
+            const provedor = provedoresIspForce.find(item => item.provedorId == provedorId);
+            if (!provedor) res.status(404).json({ errorMessage: 'Provedor não encontrado' });
+            const novoPlano = req.body;
+            novoPlano.id = getHash();
+            provedor.enviroments.planos.push(novoPlano);
+            res.json(novoPlano);
+        });
+
+        this.route.get('/kmz', function (req, res) {
+            res.sendFile('/Users/mateuscamargo/Downloads/AREA_DE_ATENDIMENTO.kmz');
+        });
+
+    }
+
+    readonly INF = 10000;
+    public point(x: any, y: any) {
+        return {
+            x: x,
+            y: y
+        }
+    }
+
+    public onSegment(p: any, q: any, r: any) { //boolean
+        if (q.x <= Math.max(p.x, r.x) &&
+            q.x >= Math.min(p.x, r.x) &&
+            q.y <= Math.max(p.y, r.y) &&
+            q.y >= Math.min(p.y, r.y)) {
+            return true;
+        }
+        return false;
+    }
+
+    public orientation(p: any, q: any, r: any) { //number
+        let val = (q.y - p.y) * (r.x - q.x)
+            - (q.x - p.x) * (r.y - q.y);
+
+        if (val == 0) {
+            return 0; // colinear
+        }
+        return (val > 0) ? 1 : 2; // clock or counterclock wise
+    }
+
+    public doIntersect(p1: any, q1: any, p2: any, q2: any) { //boolean
+        let o1 = this.orientation(p1, q1, p2);
+        let o2 = this.orientation(p1, q1, q2);
+        let o3 = this.orientation(p2, q2, p1);
+        let o4 = this.orientation(p2, q2, q1);
+
+        if (o1 != o2 && o3 != o4) {
+            return true;
+        }
+
+        if (o1 == 0 && this.onSegment(p1, p2, q1)) {
+            return true;
+        }
+
+        if (o2 == 0 && this.onSegment(p1, q2, q1)) {
+            return true;
+        }
+
+        if (o3 == 0 && this.onSegment(p2, p1, q2)) {
+            return true;
+        }
+
+        if (o4 == 0 && this.onSegment(p2, q1, q2)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    public isInside(polygon: any, n: any, p: any) { // boolean
+        if (n < 3) {
+            return false;
+        }
+
+        let extreme = this.point(this.INF, p.y);
+
+        let count = 0, i = 0;
+        do {
+            let next = (i + 1) % n;
+
+            if (this.doIntersect(polygon[i], polygon[next], p, extreme)) {
+                if (this.orientation(polygon[i], p, polygon[next]) == 0) {
+                    return this.onSegment(polygon[i], p,
+                        polygon[next]);
+                }
+
+                count++;
+            }
+            i = next;
+        } while (i != 0);
+
+        return (count % 2 == 1);
+    }

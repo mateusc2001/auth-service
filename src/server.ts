@@ -3,46 +3,73 @@ import app from './app';
 const port = 1900;
 
 app.listen(port);
-app.get('/cupom-ativacao/recomendados/:cpf', (req, res) => {
+
+app.post('/perifericos/v1/tef/pinpad/le-senha', (req, res) => {
+    const response = {
+        senha: "1908"
+    };
+    res.json(response);
+});
+
+app.get('/perifericos/v1/tef/pinpad/le-trilhas-cartao', (req, res) => {
+    const response = {
+        trilha2: "0291029392019293"
+    };
+    res.json(response);
+});
+
+app.post('/pagamento/condicoes', (req, res) => {
+    console.log(req.body);
     const response = [
         {
-            "couponId": 999999,
-            "walletId": 10101010,
-            "description": "disconto percentual",
-            "discountType": "PERCENTAGE_DISCOUNT",
-            "discountPercentage": 15.0,
-            "includeDate": "30/07/2021 15:08:29",
-            "expireDate": "31/07/2021 23:59:00",
-            "couponAvailable": 10,
-            "itemsId": [
-                683950,
-                683960,
-                683970
-            ],
-            "endDate": "31/07/2021 23:59:00",
-            "title": "disconto percentual",
-            "rules": "Válido no canal Loja. Disponibilidade de 10 utilizações na rede. Limitado a 10 utilizações por CPF.",
-            "automaticApplyInCart": true
+            "primeiroPagamento": 250, // firstPayments
+            "descricaoParcelas": "1 x R$250,00",
+            "codigoCondicaoPagamento": 1, // paymentConditionCode
+            "sequenciaCondicaoPagamento": 2, // paymentConditionSequence,
+            "codigoConvenio": 1, // covenantCode
+            "tipoParcela": 2 // installmentType
         },
         {
-            "couponId": 888888,
-            "walletId": 1111111,
-            "description": "Desconto Dorflex",
-            "discountType": "PERCENTAGE_DISCOUNT",
-            "discountPercentage": 25.0,
-            "includeDate": "30/07/2021 14:29:55",
-            "expireDate": "07/08/2021 23:59:00",
-            "itemsId": [
-                118247
-            ],
-            "endDate": "07/08/2021 23:59:00",
-            "title": "Desconto Dorflex",
-            "rules": "Válido no canal Loja.",
-            "automaticApplyInCart": true
+            "primeiroPagamento": 250, // firstPayments
+            "descricaoParcelas": "2 x R$125,00",
+            "codigoCondicaoPagamento": 2, // paymentConditionCode
+            "sequenciaCondicaoPagamento": 2, // paymentConditionSequence,
+            "codigoConvenio": 1, // covenantCode
+            "tipoParcela": 2 // installmentType
+        },
+        {
+            "primeiroPagamento": 250, // firstPayments
+            "descricaoParcelas": "3 x R$105,00",
+            "codigoCondicaoPagamento": 3, // paymentConditionCode
+            "sequenciaCondicaoPagamento": 2, // paymentConditionSequence,
+            "codigoConvenio": 1, // covenantCode
+            "tipoParcela": 2 // installmentType
+        },
+        {
+            "primeiroPagamento": 250, // firstPayments
+            "descricaoParcelas": "4 x R$85,00",
+            "codigoCondicaoPagamento": 4, // paymentConditionCode
+            "sequenciaCondicaoPagamento": 2, // paymentConditionSequence,
+            "codigoConvenio": 1, // covenantCode
+            "tipoParcela": 2 // installmentType
         }
     ];
     res.json(response);
 });
+
+
+
+app.get('/cpf/:tipo/:matricula', (req, res) => {
+    const params = req.params;
+    console.log(params.tipo, params.matricula);
+    res.json({
+        cpf: '03362354025'
+    });
+
+    // 670160
+});
+
+
 function write(texto: any[]) {
     let current = texto.shift()
     setTimeout(() => {
@@ -58,30 +85,32 @@ console.log('Serviço de autenticação rodando na porta', port);
 // console.log('');
 // console.log('');
 // console.log('');
-// write([
-//     '                               0101010101010110010101011010010101010101010101                   111010101011010111110          ',
-//     '                               0101010101010110010101011010010101010101010101                   111010101011010111110          ',
-//     '                               0101010101010110010101011010010101010101010101                   111010101011010111110          ',
-//     '                               0101010101010110010101011010010101010101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111011010110101111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101                          0101010101                   111010101011010111110          ',
-//     '                               0101010101010110010101011010010101010101010101                   111010101011010111110          ',
-//     '                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110',
-//     '                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110',
-//     '                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110'
-// ]);
+
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        1111100101                                ');
+// console.log('                               0101010101                          0101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101                          0101010101                                        0101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+// console.log('                               0101010101010110010101011010010101010101010101        111110010101100101010110100101010101111110');
+
 // console.log('');
 // console.log('');
 // console.log('');
