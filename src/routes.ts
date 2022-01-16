@@ -28,24 +28,24 @@ let contasList = [];
 
 let carros = [
     {
-      id: 123,
-      modelo: 'Astra',
-      placa: 'IHJ8H6S',
-      cor: 'Vermelho',
-      despesas: [
-        
-      ]
+        id: 123,
+        modelo: 'Astra',
+        placa: 'IHJ8H6S',
+        cor: 'Vermelho',
+        despesas: [
+
+        ]
     },
     {
-      id: 2837,
-      modelo: 'Celta',
-      placa: 'JS827DH',
-      cor: 'Branco',
-      despesas: [
-        
-      ]
+        id: 2837,
+        modelo: 'Celta',
+        placa: 'JS827DH',
+        cor: 'Branco',
+        despesas: [
+
+        ]
     }
-  ];
+];
 let registros = [];
 let registrosCaixa = [];
 // registros = [
@@ -2638,120 +2638,8 @@ class Routes {
 
     constructor() {
 
-        // automoveis
 
-        this.route.get('/carros/loja', (req, res) => {
-            const carros = [
-                {
-                    marca: 'Ford',
-                    modelo: 'Ecosport',
-                    descricao: '1.5 Ti-Vct Se',
-                    anoModelo: '2020',
-                    anoFabricacao: '2020',
-                    kilometragem: 19251,
-                    precoDe: 85190,
-                    precoPor: 85190,
-                    cambioAutomatico: true,
-                    imagens: ['https://img.volanty.com/thumb/inspecao/6448433301815296/20211210/1639159612583.jpeg']
-                },
-                {
-                    marca: 'Honda',
-                    modelo: 'Civic',
-                    descricao: '2.0 16v Flexone Ex Cvt',
-                    anoModelo: '2018',
-                    anoFabricacao: '2018',
-                    kilometragem: 22540,
-                    precoDe: 113990,
-                    precoPor: 113990,
-                    cambioAutomatico: false,
-                    imagens: ['https://img.volanty.com/thumb/inspecao/5506288806002688/20211210/1639159271859.jpeg']
-                },
-                {
-                    marca: 'Ford',
-                    modelo: 'Ka',
-                    anoModelo: '2019',
-                    anoFabricacao: '2018',
-                    kilometragem: 24492,
-                    descricao: '1.0 Se Plus 12v',
-                    precoDe: 45000,
-                    precoPor: 45000,
-                    cambioAutomatico: false,
-                    imagens: ['https://img.volanty.com/thumb/inspecao/5037955358916608/20211210/1639159843906.jpeg']
-                }
-            ];
-            res.json(carros);
-        });
-
-
-
-
-        // automoveis
-
-
-
-
-
-
-
-
-        this.route.get('/contas/pagar/ativas', (req, res) => {
-            const response = contasList.filter(conta => !conta.finalizado && conta.pagar);
-            res.json(response);
-        });
-
-        this.route.post('/add/carro', (req, res) => {
-            const response = carros.push(req.body);
-            res.json(response);
-        });
-
-        // {
-        //     marca: 'Ford',
-        //     modelo: 'Ka',
-        //     anoModelo: '2019',
-        //     anoFabricacao: '2018',
-        //     kilometragem: 24492,
-        //     descricao: '1.0 Se Plus 12v',
-        //     precoDe: 45000,
-        //     precoPor: 45000,
-        //     cambioAutomatico: false,
-        //     imagens: ['https://img.volanty.com/thumb/inspecao/5037955358916608/20211210/1639159843906.jpeg']
-        // }
-        this.route.post('/multiplas/transferencias', (req, res) => {
-            const transferencias = req.body.transferencias;
-            const idUsuarioOrigem = req.body.transferencias;
-            const valorTotal = req.body.valorTotal;
-            usuarios.forEach(user => {
-                if (user.id == idUsuarioOrigem) {
-                    user.saldo -= valorTotal;
-                }
-            });
-            transferencias.forEach(element => {
-                const user = usuarios.find(item => item.id == element.usuarioDestino);
-                user.saldo += element.valor;
-            });
-            res.status(200);
-        });
-
-        this.route.get('/contas/receber/ativas', (req, res) => {
-            const response = contasList.filter(conta => !conta.finalizado && !conta.pagar);
-            res.json(response);
-        });
-
-        this.route.get('/carros', (req, res) => {
-            const response = carros.map(carro => {
-                const totalDespesas = carro.despesas.reduce((acc, cur) => acc += cur.valor, 0);
-                return Object.assign(carro, { totalDespesas: totalDespesas });
-            });
-            res.json(response);
-        });
-
-        this.route.post('/carros/add/despesa', (req, res) => {
-            const despesa = req.body.despesa;
-            const idVeiculo = req.body.idVeiculo;
-            const carroSelecionado = carros.find(carro => carro.id == idVeiculo);
-            carroSelecionado.despesas.push(CarrosMapper.mapNovaDespesa(despesa));
-            res.json(carroSelecionado);
-        });
+        // barth 
 
         this.route.post('/add/registro/caixa', (req, res) => {
             const caixa = registrosCaixa[(registrosCaixa.length - 1)];
@@ -2761,22 +2649,61 @@ class Routes {
             res.json(novoRegistro);
         });
 
-        this.route.get('/registro/caixa', (req, res) => {
-            res.json(registrosCaixa);
-        });
-
         this.route.get('/registro/caixa/page/:page/count/:count', (req, res) => {
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(registrosCaixa, page, count));
         });
 
-        this.route.get('/vencimento-hoje', (req, res) => {
-            const response = {
-                contasPagarHoje: contasList.filter(item => item.pagar && isToday(item.dataFinal)).length,
-                contasReceberHoje: contasList.filter(item => !item.pagar && isToday(item.dataFinal)).length
+        this.route.post('/add/user', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const nomeCompleto = req.body.nomeCompleto;
+            const base64image = req.body.base64image;
+            const newUser = {
+                id: (usuarios.length + 1),
+                dataCriacao: getActualDate(),
+                usuario: usuario,
+                senha: senha,
+                nomeCompleto: nomeCompleto,
+                base64image: base64image,
+                saldo: 0
             };
-            res.json(response);
+            usuarios.push(newUser);
+            res.json(newUser);
+        });
+
+        this.route.put('/user/:userId', (req, res) => {
+            const {
+                usuario,
+                nomeCompleto,
+                base64image
+            } = req.body;
+
+            const usuarioParaEditar = usuarios.find(user => user.id == Number(req.params.userId));
+            if (!!usuarioParaEditar) {
+                usuarioParaEditar.base64image = base64image;
+                usuarioParaEditar.usuario = usuario;
+                usuarioParaEditar.nomeCompleto = nomeCompleto;
+                res.json(usuarioParaEditar);
+            } else {
+                res.status(404).json({ error: 'Usuário não encontrado.' });
+            }
+            res.json();
+        });
+
+        this.route.get('/users/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const registrosResponse = usuarios.map(item => {
+                return buildUser(item, null);
+            });
+            const totalPages = registrosResponse.length / count;
+            res.json({
+                totalResults: registrosResponse.length,
+                totalPages: Math.ceil(totalPages),
+                data: registrosResponse.slice((page - 1) * count, page * count)
+            });
         });
 
         // Contas a pagar
@@ -2851,112 +2778,90 @@ class Routes {
             }
         });
 
-
-        this.route.put('/user/:userId', (req, res) => {
-            const {
-                usuario,
-                nomeCompleto,
-                base64image
-            } = req.body;
-
-            const usuarioParaEditar = usuarios.find(user => user.id == Number(req.params.userId));
-            if (!!usuarioParaEditar) {
-                usuarioParaEditar.base64image = base64image;
-                usuarioParaEditar.usuario = usuario;
-                usuarioParaEditar.nomeCompleto = nomeCompleto;
-                res.json(usuarioParaEditar);
-            } else {
-                res.status(404).json({ error: 'Usuário não encontrado.' });
+        this.route.get('/registros/por-usuarios/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const userOne = req.query.users[0];
+            const userTwo = req.query.users[1];
+            const registrosResponse = registros
+                .filter(item => !!item.transacao
+                    && (((userOne == item.transacao.idUsuarioOrigem) && (userTwo == item.transacao.idUsuarioDestinatario))
+                        || ((userTwo == item.transacao.idUsuarioOrigem) && (userOne == item.transacao.idUsuarioDestinatario))))
+            const response = pagination(registrosResponse, page, count);
+            const data = response.data;
+            response.data = {
+                usuarios: usuarios.filter(usuario => usuario.id == userOne || usuario.id == userTwo),
+                registros: data
             }
-            res.json();
+            res.json(response);
         });
 
+        this.route.post('/multiplas/transferencias', (req, res) => {
+            const transferencias = req.body.transferencias;
+            const idUsuarioOrigem = req.body.transferencias;
+            const valorTotal = req.body.valorTotal;
+            usuarios.forEach(user => {
+                if (user.id == idUsuarioOrigem) {
+                    user.saldo -= valorTotal;
+                }
+            });
+            transferencias.forEach(element => {
+                const user = usuarios.find(item => item.id == element.usuarioDestino);
+                user.saldo += element.valor;
+            });
+            res.status(200);
+        });
 
-        this.route.get('/registros/:origem/:destino', (req, res) => {
-            const { origem, destino } = req.params;
-            const response = registros
-                .filter(res => !!res.transacao)
-                .filter(registro => {
-                    const a = registro.transacao.idUsuarioOrigem == origem || registro.transacao.idUsuarioOrigem == destino;
-                    const b = registro.transacao.idUsuarioDestinatario == origem || registro.transacao.idUsuarioDestinatario == destino;
-                    return a && b;
-                });
+        this.route.get('/contas/receber/ativas', (req, res) => {
+            const response = contasList.filter(conta => !conta.finalizado && !conta.pagar);
             res.json(response);
         });
 
 
-        this.route.post('/upload', function (req, res) {
-            console.log(req.body);
-            res.json({ ok: true });
-        });
-
-        this.route.post('/logar', function (req, res) {
-            const usuario = req.body.usuario;
-            const senha = req.body.senha;
-            const usuarioLogado = usuarios.find(user => user.usuario == usuario && user.senha == senha);
-            if (!!usuarioLogado) {
-                res.json(buildUser(usuarioLogado, usuarioLogado.dataCriacao));
-                // res.json({
-                //     id: usuarioLogado.id,
-                //     nomeCompleto: usuarioLogado.nomeCompleto,
-                //     usuario: usuarioLogado.usuario,
-                //     dataCriacao: usuarioLogado.dataCriacao,
-                // });
-            } else {
-                res.status(404).json({
-                    error: 'Usuário ou senha inválida.'
-                });
-            }
-        });
-
-        this.route.post('/add/user', function (req, res) {
-            const usuario = req.body.usuario;
-            const senha = req.body.senha;
-            const nomeCompleto = req.body.nomeCompleto;
-            const base64image = req.body.base64image;
-            const newUser = {
-                id: (usuarios.length + 1),
-                dataCriacao: getActualDate(),
-                usuario: usuario,
-                senha: senha,
-                nomeCompleto: nomeCompleto,
-                base64image: base64image,
-                saldo: 0
-            };
-            usuarios.push(newUser);
-            res.json(newUser);
-        });
-
-        this.route.get('/users', function (req, res) {
-            res.json(usuarios.map(user => {
-                return buildUser(user, null);
-            }));
-        });
-
-        this.route.get('/user/:userId', function (req, res) {
-            res.json(buildUser(usuarios.find(item => item.id.toString() == req.params.userId), null));
-        });
-
-        this.route.post('/registros', function (req, res) {
-            const itens: any[] = req.body;
 
 
-            itens.forEach(item => {
-                const stringToHash = (Math.floor(Math.random() * 1000) + 1).toString();
-                var hash = 0, i, chr;
-                if (stringToHash.length === 0) return hash;
-                for (i = 0; i < stringToHash.length; i++) {
-                    chr = stringToHash.charCodeAt(i);
-                    hash = ((hash << 5) - hash) + chr;
-                    hash |= 0; // Convert to 32bit integer
-                }
-
-                item.id = hash;
-                item.dataCriacao = getActualDate();
-                registros.push(item);
+        this.route.get('/carros', (req, res) => {
+            const response = carros.map(carro => {
+                const totalDespesas = carro.despesas.reduce((acc, cur) => acc += cur.valor, 0);
+                return Object.assign(carro, { totalDespesas: totalDespesas });
             });
-            res.json(req.body);
+            res.json(response);
         });
+
+        this.route.post('/carros/add/despesa', (req, res) => {
+            const despesa = req.body.despesa;
+            const idVeiculo = req.body.idVeiculo;
+            const carroSelecionado = carros.find(carro => carro.id == idVeiculo);
+            carroSelecionado.despesas.push(CarrosMapper.mapNovaDespesa(despesa));
+            res.json(carroSelecionado);
+        });
+
+
+        this.route.get('/registro/caixa', (req, res) => {
+            res.json(registrosCaixa);
+        });
+
+        this.route.get('/vencimento-hoje', (req, res) => {
+            const response = {
+                contasPagarHoje: contasList.filter(item => item.pagar && isToday(item.dataFinal)).length,
+                contasReceberHoje: contasList.filter(item => !item.pagar && isToday(item.dataFinal)).length
+            };
+            res.json(response);
+        });
+
+
+
+
+        this.route.get('/contas/pagar/ativas', (req, res) => {
+            const response = contasList.filter(conta => !conta.finalizado && conta.pagar);
+            res.json(response);
+        });
+
+        this.route.post('/add/carro', (req, res) => {
+            const response = carros.push(req.body);
+            res.json(response);
+        });
+
 
         this.route.get('/registros', function (req, res) {
             res.json(registros);
@@ -2988,12 +2893,80 @@ class Routes {
             res.json(objs);
         });
 
-        this.route.get('/registros/page/:page/count/:count', function (req, res) {
-            const page = parseFloat(req.params.page);
-            const count = parseFloat(req.params.count);
-            const totalPages = registros.length / count;
-            res.json(pagination(registros, page, count));
+
+        this.route.put('/registrar-transacao', (req, res) => {
+            const registro = req.body;
+            registros.forEach((item, index) => {
+                if (item.id == registro.id) {
+                    item.transacao = registro.transacao;
+                    item.descricaoPessoal = registro.descricaoPessoal;
+                    usuarios.find(user => user.id == registro.transacao.idUsuarioDestinatario).saldo += Number(item.valor);
+                    usuarios.find(user => user.id == registro.transacao.idUsuarioOrigem).saldo -= Number(item.valor);
+                    if (!!req.body.transacao && !!req.body.transacao.comissaoRegistro) {
+                        const comissaoRegistroId = registro.transacao.comissaoRegistro.id;
+                        item.transacao.comissaoRegistro = comissaoRegistroId;
+                        const registroComissao = registros.find(registroComissao => registroComissao.id == comissaoRegistroId);
+                        registroComissao.transacao.finalizado = true;
+                    }
+                }
+            });
+            res.json(registros.find(item => item.id == registro.id));
         });
+
+        this.route.get('/users', function (req, res) {
+            res.json(usuarios.map(user => {
+                return buildUser(user, null);
+            }));
+        });
+
+        this.route.get('/user/:userId', function (req, res) {
+            res.json(buildUser(usuarios.find(item => item.id.toString() == req.params.userId), null));
+        });
+
+
+
+        this.route.post('/logar', function (req, res) {
+            const usuario = req.body.usuario;
+            const senha = req.body.senha;
+            const usuarioLogado = usuarios.find(user => user.usuario == usuario && user.senha == senha);
+            if (!!usuarioLogado) {
+                res.json(buildUser(usuarioLogado, usuarioLogado.dataCriacao));
+                // res.json({
+                //     id: usuarioLogado.id,
+                //     nomeCompleto: usuarioLogado.nomeCompleto,
+                //     usuario: usuarioLogado.usuario,
+                //     dataCriacao: usuarioLogado.dataCriacao,
+                // });
+            } else {
+                res.status(404).json({
+                    error: 'Usuário ou senha inválida.'
+                });
+            }
+        });
+
+
+        this.route.post('/registros', function (req, res) {
+            const itens: any[] = req.body;
+
+
+            itens.forEach(item => {
+                const stringToHash = (Math.floor(Math.random() * 1000) + 1).toString();
+                var hash = 0, i, chr;
+                if (stringToHash.length === 0) return hash;
+                for (i = 0; i < stringToHash.length; i++) {
+                    chr = stringToHash.charCodeAt(i);
+                    hash = ((hash << 5) - hash) + chr;
+                    hash |= 0; // Convert to 32bit integer
+                }
+
+                item.id = hash;
+                item.dataCriacao = getActualDate();
+                registros.push(item);
+            });
+            res.json(req.body);
+        });
+
+
 
         this.route.get('/registros/comissionados/page/:page/count/:count/id-usuario/:idUsuario', function (req, res) {
             const page = parseFloat(req.params.page);
@@ -3007,6 +2980,13 @@ class Routes {
                 totalPages: Math.ceil(totalPages),
                 data: registrosResponse.slice((page - 1) * count, page * count)
             });
+        });
+
+        this.route.get('/registros/page/:page/count/:count', function (req, res) {
+            const page = parseFloat(req.params.page);
+            const count = parseFloat(req.params.count);
+            const totalPages = registros.length / count;
+            res.json(pagination(registros, page, count));
         });
 
         this.route.get('/registros/page/:page/count/:count', function (req, res) {
@@ -3044,6 +3024,74 @@ class Routes {
                 data: registrosResponse.slice((page - 1) * count, page * count)
             });
         });
+        // barth end 
+
+        // automoveis
+
+        this.route.get('/carros/loja', (req, res) => {
+            const carros = [
+                {
+                    marca: 'Ford',
+                    modelo: 'Ecosport',
+                    descricao: '1.5 Ti-Vct Se',
+                    anoModelo: '2020',
+                    anoFabricacao: '2020',
+                    kilometragem: 19251,
+                    precoDe: 85190,
+                    precoPor: 85190,
+                    cambioAutomatico: true,
+                    imagens: ['https://img.volanty.com/thumb/inspecao/6448433301815296/20211210/1639159612583.jpeg']
+                },
+                {
+                    marca: 'Honda',
+                    modelo: 'Civic',
+                    descricao: '2.0 16v Flexone Ex Cvt',
+                    anoModelo: '2018',
+                    anoFabricacao: '2018',
+                    kilometragem: 22540,
+                    precoDe: 113990,
+                    precoPor: 113990,
+                    cambioAutomatico: false,
+                    imagens: ['https://img.volanty.com/thumb/inspecao/5506288806002688/20211210/1639159271859.jpeg']
+                },
+                {
+                    marca: 'Ford',
+                    modelo: 'Ka',
+                    anoModelo: '2019',
+                    anoFabricacao: '2018',
+                    kilometragem: 24492,
+                    descricao: '1.0 Se Plus 12v',
+                    precoDe: 45000,
+                    precoPor: 45000,
+                    cambioAutomatico: false,
+                    imagens: ['https://img.volanty.com/thumb/inspecao/5037955358916608/20211210/1639159843906.jpeg']
+                }
+            ];
+            res.json(carros);
+        });
+
+        // automoveis
+
+
+        this.route.get('/registros/:origem/:destino', (req, res) => {
+            const { origem, destino } = req.params;
+            const response = registros
+                .filter(res => !!res.transacao)
+                .filter(registro => {
+                    const a = registro.transacao.idUsuarioOrigem == origem || registro.transacao.idUsuarioOrigem == destino;
+                    const b = registro.transacao.idUsuarioDestinatario == origem || registro.transacao.idUsuarioDestinatario == destino;
+                    return a && b;
+                });
+            res.json(response);
+        });
+
+
+        this.route.post('/upload', function (req, res) {
+            console.log(req.body);
+            res.json({ ok: true });
+        });
+
+        
 
         this.route.get('/registros/por-usuario/page/:page/count/:count/id-usuario/:idUsuario', function (req, res) {
             const page = parseFloat(req.params.page);
@@ -3062,56 +3110,8 @@ class Routes {
             });
         });
 
-        this.route.get('/registros/por-usuarios/page/:page/count/:count', function (req, res) {
-            const page = parseFloat(req.params.page);
-            const count = parseFloat(req.params.count);
-            const userOne = req.query.users[0];
-            const userTwo = req.query.users[1];
-            const registrosResponse = registros
-                .filter(item => !!item.transacao
-                    && (((userOne == item.transacao.idUsuarioOrigem) && (userTwo == item.transacao.idUsuarioDestinatario))
-                        || ((userTwo == item.transacao.idUsuarioOrigem) && (userOne == item.transacao.idUsuarioDestinatario))))
-            const response = pagination(registrosResponse, page, count);
-            const data = response.data;
-            response.data = {
-                usuarios: usuarios.filter(usuario => usuario.id == userOne || usuario.id == userTwo),
-                registros: data
-            }
-            res.json(response);
-        });
+        
 
-        this.route.get('/users/page/:page/count/:count', function (req, res) {
-            const page = parseFloat(req.params.page);
-            const count = parseFloat(req.params.count);
-            const registrosResponse = usuarios.map(item => {
-                return buildUser(item, null);
-            });
-            const totalPages = registrosResponse.length / count;
-            res.json({
-                totalResults: registrosResponse.length,
-                totalPages: Math.ceil(totalPages),
-                data: registrosResponse.slice((page - 1) * count, page * count)
-            });
-        });
-
-        this.route.put('/registrar-transacao', (req, res) => {
-            const registro = req.body;
-            registros.forEach((item, index) => {
-                if (item.id == registro.id) {
-                    item.transacao = registro.transacao;
-                    item.descricaoPessoal = registro.descricaoPessoal;
-                    usuarios.find(user => user.id == registro.transacao.idUsuarioDestinatario).saldo += Number(item.valor);
-                    usuarios.find(user => user.id == registro.transacao.idUsuarioOrigem).saldo -= Number(item.valor);
-                    if (!!req.body.transacao && !!req.body.transacao.comissaoRegistro) {
-                        const comissaoRegistroId = registro.transacao.comissaoRegistro.id;
-                        item.transacao.comissaoRegistro = comissaoRegistroId;
-                        const registroComissao = registros.find(registroComissao => registroComissao.id == comissaoRegistroId);
-                        registroComissao.transacao.finalizado = true;
-                    }
-                }
-            });
-            res.json(registros.find(item => item.id == registro.id));
-        });
 
         this.route.get('/registros-aprovados/id-usuario/:id', (req, res) => {
             const idUsuario = req.params.id;

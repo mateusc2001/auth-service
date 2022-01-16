@@ -3,7 +3,8 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import route from './routes';
 import bodyParser from 'body-parser';
-import contaRoute from './conta.route';
+// import contaRoute from './conta.route';
+// import vendasRoutes from './vendas-routes';
 
 class App {
     public express: express.Application;
@@ -25,17 +26,20 @@ class App {
     }
 
     private database() {
-        const uri = 'mongodb://mateus:123@clusterhotel-shard-00-00-rc4kb.mongodb.net:27017,clusterhotel-shard-00-01-rc4kb.mongodb.net:27017,clusterhotel-shard-00-02-rc4kb.mongodb.net:27017/barbershop_tst?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority'
-        // mongoose.connect(uri, { 
-        //     useUnifiedTopology: true,
-        //     useNewUrlParser: true,
-        //     useCreateIndex: true
-        // });
+        const uri = 'mongodb://mateus:Oa8uwcZw5sjZsvwl@clusterhotel-shard-00-00-rc4kb.mongodb.net:27017,clusterhotel-shard-00-01-rc4kb.mongodb.net:27017,clusterhotel-shard-00-02-rc4kb.mongodb.net:27017/barbershop_tst?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority'
+        // const newUrl = 'mongodb+srv://mateus:123@clusterhotel.rc4kb.mongodb.net/barth-financeiro?retryWrites=true&w=majority';
+        const newUrl = 'mongodb://mateus:Oa8uwcZw5sjZsvwl@clusterhotel-shard-00-00.rc4kb.mongodb.net:27017,clusterhotel-shard-00-01.rc4kb.mongodb.net:27017,clusterhotel-shard-00-02.rc4kb.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority';        
+        mongoose.connect(uri, { 
+            useUnifiedTopology: true,
+            useNewUrlParser: true,
+            useCreateIndex: true
+        });
     }
 
     private routes(): void {
         this.express.use(route);
-        this.express.use('/conta', contaRoute);
+        // this.express.use('/conta', contaRoute);
+        // this.express.use('/veiculos', vendasRoutes);
     }
 }
 

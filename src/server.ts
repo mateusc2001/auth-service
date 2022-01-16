@@ -4,11 +4,82 @@ const port = 1900;
 
 app.listen(port);
 
+enum AtividadeEnum {
+    SENHA_CORRETA = 1,
+    SENHA_INCORRETA = 2,
+    ERRO = 3
+}
+
+const senhaIncorreta = "so8WdZVAxUV0vocKBMvJoihBUe5AvjqwonDWjCsnygN0LtGyltcEYmMS7lrzCT55xRKdUKMJjvZBdMdu6GN8Z9HWwANFFOAKYf9+25G+uiqvk1gcjppfuISA4fymzCrueSPRBwubQbXDMVOPxtClu8y4sZv4mQJb7OY4hIx9VKNfp3Z3Iw1Cy25Vm9s2ILeW5eDElKTfcXM0as8zmOtDDtcIal1q+X6sjpXJ84lBXaNjxW67zng9Lvs4G/xdFBEQRV5jpn1Si+fgW7THHb5FU7hWf4E4GBXOu+H03Mawb1BdgNfYqdrIhs6xIyuBml/5MCI/JfxpaitTcir8JJvYkQ==";
+const senhaCorreta = "pn0vyHVVMenMOXEpftW1mFLHwpgRlMQbiqrw6q51TIIbO3L+/Vh1yBAOQPP8PHfrh1PHZHEERfSKdMIXefzygc66nNMGXmvWShV4EHj6jnJcExVu0gE65yznD/Dx7i7YUEAF2iBRYnTj9IAjSsNCFMemHGHGHxhUe1gtFjhg3wGTFFBVF+sJgwgI89mcevcK9YgERmEZXUgZDo7Xr5KdA0DBoC6fHUDC9m3cKzkyKxZjjSV8IE/LW8pi6QjbNDBo4fu6QMoxTCzGz0wsqzRn4DJAB6Vlo+7MgwgU7euHFVRbjLP6LtIs0pDVg31X0V19rFm65cRo0m64um3XZxjOmQ==";
+
+function getSenhaCorretaResponse(statusCode) {
+    return {
+        statusCode: statusCode ? statusCode : 200,
+        data: {
+            senha: senhaCorreta
+        }
+    }
+}
+
+function getSenhaIncorretaResponse(statusCode) {
+    return {
+        statusCode: statusCode ? statusCode : 401,
+        data: {
+            senha: senhaIncorreta
+        }
+    }
+}
+
+function getErro(statusCode) {
+    return {
+        statusCode: statusCode ? statusCode : 501,
+        data: [
+            {
+                "code": null,
+                "message": "REALIZE Senha inválida. Cliente ainda possui 1 tentativa(s).",
+                "detail": "INVALID_PASSWORD",
+                "field": null
+            }
+        ]
+    }
+}
+
+let tentativas = 3;
+
+app.post('/pedido', (req, res) => {
+    tentativas--;
+    res.status(412).json([
+        {
+            "code": null,
+            "message": tentativas > 0 ? `REALIZE Senha inválida. Cliente ainda possui ${tentativas} tentativa(s).` : `Cartão bloqueado.`,
+            "detail": "INVALID_PASSWORD",
+            "field": null
+        }
+    ]);
+});
+
 app.post('/perifericos/v1/tef/pinpad/le-senha', (req, res) => {
-    const response = {
-        senha: "1908"
-    };
-    res.json(response);
+    const atividade: number = AtividadeEnum.SENHA_CORRETA;
+    const statusCode: number = 200;
+
+    let response = null;
+
+    switch (atividade) {
+        case AtividadeEnum.SENHA_CORRETA:
+            response = getSenhaCorretaResponse(statusCode);
+            break;
+        case AtividadeEnum.SENHA_INCORRETA:
+            response = getSenhaIncorretaResponse(statusCode);
+            break;
+        case AtividadeEnum.ERRO:
+            response = getErro(statusCode);
+            break;
+        default:
+            break;
+    }
+
+    res.status(response.statusCode).json(response.data);
 });
 
 app.get('/perifericos/v1/tef/pinpad/le-trilhas-cartao', (req, res) => {
