@@ -10,6 +10,11 @@ enum AtividadeEnum {
     ERRO = 3
 }
 
+app.put('/teste', (req, res) => {
+    console.log(req.body);
+    res.json();
+});
+
 const senhaIncorreta = "so8WdZVAxUV0vocKBMvJoihBUe5AvjqwonDWjCsnygN0LtGyltcEYmMS7lrzCT55xRKdUKMJjvZBdMdu6GN8Z9HWwANFFOAKYf9+25G+uiqvk1gcjppfuISA4fymzCrueSPRBwubQbXDMVOPxtClu8y4sZv4mQJb7OY4hIx9VKNfp3Z3Iw1Cy25Vm9s2ILeW5eDElKTfcXM0as8zmOtDDtcIal1q+X6sjpXJ84lBXaNjxW67zng9Lvs4G/xdFBEQRV5jpn1Si+fgW7THHb5FU7hWf4E4GBXOu+H03Mawb1BdgNfYqdrIhs6xIyuBml/5MCI/JfxpaitTcir8JJvYkQ==";
 const senhaCorreta = "pn0vyHVVMenMOXEpftW1mFLHwpgRlMQbiqrw6q51TIIbO3L+/Vh1yBAOQPP8PHfrh1PHZHEERfSKdMIXefzygc66nNMGXmvWShV4EHj6jnJcExVu0gE65yznD/Dx7i7YUEAF2iBRYnTj9IAjSsNCFMemHGHGHxhUe1gtFjhg3wGTFFBVF+sJgwgI89mcevcK9YgERmEZXUgZDo7Xr5KdA0DBoC6fHUDC9m3cKzkyKxZjjSV8IE/LW8pi6QjbNDBo4fu6QMoxTCzGz0wsqzRn4DJAB6Vlo+7MgwgU7euHFVRbjLP6LtIs0pDVg31X0V19rFm65cRo0m64um3XZxjOmQ==";
 

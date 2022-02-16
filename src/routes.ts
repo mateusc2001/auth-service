@@ -5,6 +5,9 @@ import * as jwt from "jsonwebtoken";
 import { UserSchema } from "./schemas/user.schema";
 import * as http from "request-promise-native";
 import { isNonNullExpression } from 'typescript';
+import { Builder } from 'builder-pattern';
+import { UsuarioModel } from './barth/model/usuario.model';
+import { UsuarioService } from './barth/service/usuario.service';
 
 export const pagination = (list, page, count) => {
     const totalPages = list.length / count;
@@ -25,7 +28,6 @@ const isToday = (someDate) => {
 
 
 let contasList = [];
-
 let carros = [
     {
         id: 123,
@@ -2641,7 +2643,7 @@ class Routes {
 
         // barth 
 
-        this.route.post('/add/registro/caixa', (req, res) => {
+        this.route.post('/add/registro/caixa', (req, res) => { // feito!! /caixa
             const caixa = registrosCaixa[(registrosCaixa.length - 1)];
             const saldoAtual = caixa != null ? caixa.saldoFinal : 0;
             const novoRegistro = ContasMapper.mapNovoRegistroCaixa(req.body, saldoAtual);
@@ -2649,31 +2651,28 @@ class Routes {
             res.json(novoRegistro);
         });
 
-        this.route.get('/registro/caixa/page/:page/count/:count', (req, res) => {
+        this.route.get('/registro/caixa/page/:page/count/:count', (req, res) => { // feito!! /caixa/page/1/count/3
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(registrosCaixa, page, count));
         });
 
-        this.route.post('/add/user', function (req, res) {
+        this.route.post('/add/user', async (req, res) => { // feito!!
             const usuario = req.body.usuario;
             const senha = req.body.senha;
             const nomeCompleto = req.body.nomeCompleto;
             const base64image = req.body.base64image;
-            const newUser = {
-                id: (usuarios.length + 1),
-                dataCriacao: getActualDate(),
-                usuario: usuario,
-                senha: senha,
-                nomeCompleto: nomeCompleto,
-                base64image: base64image,
-                saldo: 0
-            };
-            usuarios.push(newUser);
-            res.json(newUser);
+            const newUser: UsuarioModel = Builder<UsuarioModel>()
+                .dataCriacao(getActualDate())
+                .usuario(usuario)
+                .senha(senha)
+                .nomeCompleto(nomeCompleto)
+                .base64image(base64image)
+                .build();
+            res.json(await UsuarioService.createUser(newUser));
         });
 
-        this.route.put('/user/:userId', (req, res) => {
+        this.route.put('/user/:userId', (req, res) => { // feito!!
             const {
                 usuario,
                 nomeCompleto,
@@ -2692,7 +2691,7 @@ class Routes {
             res.json();
         });
 
-        this.route.get('/users/page/:page/count/:count', function (req, res) {
+        this.route.get('/users/page/:page/count/:count', function (req, res) { // feito!!
             const page = parseFloat(req.params.page);
             const count = parseFloat(req.params.count);
             const registrosResponse = usuarios.map(item => {
@@ -2707,30 +2706,30 @@ class Routes {
         });
 
         // Contas a pagar
-        this.route.get('/pagar/fixas/page/:page/count/:count', (req, res) => {
+        this.route.get('/pagar/fixas/page/:page/count/:count', (req, res) => { // feito!!
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(contasList.filter(item => item.pagar && item.contaFixa), page, count));
         });
 
-        this.route.get('/pagar/variaveis/page/:page/count/:count', (req, res) => {
+        this.route.get('/pagar/variaveis/page/:page/count/:count', (req, res) => { // feito!!
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(contasList.filter(item => item.pagar && !item.contaFixa), page, count));
         });
 
-        this.route.post('/pagar', (req, res) => {
+        this.route.post('/pagar', (req, res) => { // feito!!
             const novoPlano = ContasMapper.mapNovaContaPagar(req.body);
             contasList.push(novoPlano);
             res.json(novoPlano);
         });
 
-        this.route.patch('/pagar/finalizar/:id', (req, res) => {
+        this.route.patch('/pagar/finalizar/:id', (req, res) => { // feito!!
             const conta = contasList.find(item => item.id == req.params.id);
 
             if (!!conta) {
-                // let usuario = usuarios.find(item => item.id == conta.idUsuario);
-                // if (usuario) usuarios.saldo += conta.valor;
+                // let usuario = usuarios aa.find(item => item.id == conta.idUsuario);
+                // if (usuario) usuarios aa.saldo += conta.valor;
                 conta.finalizado = true;
                 res.json(conta);
             } else {
@@ -2743,30 +2742,30 @@ class Routes {
         });
 
         // Contas a receber
-        this.route.get('/receber/fixas/page/:page/count/:count', (req, res) => {
+        this.route.get('/receber/fixas/page/:page/count/:count', (req, res) => { // feito!!
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(contasList.filter(item => !item.pagar && item.contaFixa), page, count));
         });
 
-        this.route.get('/receber/variaveis/page/:page/count/:count', (req, res) => {
+        this.route.get('/receber/variaveis/page/:page/count/:count', (req, res) => { // feito!!
             const page = req.params.page;
             const count = req.params.count;
             res.json(pagination(contasList.filter(item => !item.pagar && !item.contaFixa), page, count));
         });
 
-        this.route.post('/receber', (req, res) => {
+        this.route.post('/receber', (req, res) => { // feito!!
             const novoPlano = ContasMapper.mapNovaContaReceber(req.body);
             contasList.push(novoPlano);
             res.json(novoPlano);
         });
 
-        this.route.patch('/receber/finalizar/:id', (req, res) => {
+        this.route.patch('/receber/finalizar/:id', (req, res) => { // feito!!
             const conta = contasList.find(item => item.id == req.params.id);
 
             if (!!conta) {
-                // let usuario = usuarios.find(item => item.id == conta.idUsuario);
-                // if (usuario) usuarios.saldo += conta.valor;
+                // let usuario = usuarios aa.find(item => item.id == conta.idUsuario);
+                // if (usuario) usuarios aa.saldo += conta.valor;
                 conta.finalizado = true;
                 res.json(conta);
             } else {
@@ -2796,7 +2795,7 @@ class Routes {
             res.json(response);
         });
 
-        this.route.post('/multiplas/transferencias', (req, res) => {
+        this.route.post('/multiplas/transferencias', (req, res) => { // feito!!
             const transferencias = req.body.transferencias;
             const idUsuarioOrigem = req.body.transferencias;
             const valorTotal = req.body.valorTotal;
@@ -2863,21 +2862,26 @@ class Routes {
         });
 
 
-        this.route.get('/registros', function (req, res) {
+        this.route.get('/registros', function (req, res) { // feito!!
             res.json(registros);
         });
 
         this.route.get('/barth/metricas/:userId', function (req, res) {
             const userId = req.params.userId;
+
+            // Buscando registros com transação
             const transacoes = registros.filter(item => {
                 if (!item.transacao) return false;
                 return item.transacao.idUsuarioOrigem == userId || item.transacao.idUsuarioDestinatario == userId;
             });
+
+            // Buscando registros com transação
             const ids = transacoes.map(item => {
                 const idUsuarioOrigem = item.transacao.idUsuarioOrigem;
                 const idUsuarioDestinatario = item.transacao.idUsuarioDestinatario;
                 return idUsuarioOrigem == userId ? idUsuarioDestinatario : idUsuarioOrigem;
             });
+            
             const semRepetidos = ids.filter((item, i) => ids.indexOf(item) == i);
 
             const objs = semRepetidos.map(id => {
@@ -2894,7 +2898,7 @@ class Routes {
         });
 
 
-        this.route.put('/registrar-transacao', (req, res) => {
+        this.route.put('/registrar-transacao', (req, res) => { // feito
             const registro = req.body;
             registros.forEach((item, index) => {
                 if (item.id == registro.id) {
@@ -2913,19 +2917,19 @@ class Routes {
             res.json(registros.find(item => item.id == registro.id));
         });
 
-        this.route.get('/users', function (req, res) {
+        this.route.get('/users', function (req, res) { // feito!!
             res.json(usuarios.map(user => {
                 return buildUser(user, null);
             }));
         });
 
-        this.route.get('/user/:userId', function (req, res) {
+        this.route.get('/user/:userId', function (req, res) { // feito!!
             res.json(buildUser(usuarios.find(item => item.id.toString() == req.params.userId), null));
         });
 
 
 
-        this.route.post('/logar', function (req, res) {
+        this.route.post('/logar', function (req, res) { // feito!!
             const usuario = req.body.usuario;
             const senha = req.body.senha;
             const usuarioLogado = usuarios.find(user => user.usuario == usuario && user.senha == senha);
@@ -2945,7 +2949,7 @@ class Routes {
         });
 
 
-        this.route.post('/registros', function (req, res) {
+        this.route.post('/registros', function (req, res) { // feito!!
             const itens: any[] = req.body;
 
 
@@ -2982,14 +2986,14 @@ class Routes {
             });
         });
 
-        this.route.get('/registros/page/:page/count/:count', function (req, res) {
+        this.route.get('/registros/page/:page/count/:count', function (req, res) { // feito
             const page = parseFloat(req.params.page);
             const count = parseFloat(req.params.count);
             const totalPages = registros.length / count;
             res.json(pagination(registros, page, count));
         });
 
-        this.route.get('/registros/page/:page/count/:count', function (req, res) {
+        this.route.get('/registros/page/:page/count/:count', function (req, res) { // feito
             const page = parseFloat(req.params.page);
             const count = parseFloat(req.params.count);
             const registrosResponse = registros.filter(item => true);
@@ -3001,7 +3005,7 @@ class Routes {
             });
         });
 
-        this.route.get('/registros/pendentes/page/:page/count/:count', function (req, res) {
+        this.route.get('/registros/pendentes/page/:page/count/:count', function (req, res) { // feito
             const page = parseFloat(req.params.page);
             const count = parseFloat(req.params.count);
             const registrosResponse = registros.filter(item => !item.transacao);
@@ -3013,7 +3017,7 @@ class Routes {
             });
         });
 
-        this.route.get('/registros/realizados/page/:page/count/:count', function (req, res) {
+        this.route.get('/registros/realizados/page/:page/count/:count', function (req, res) { // feito
             const page = parseFloat(req.params.page);
             const count = parseFloat(req.params.count);
             const registrosResponse = registros.filter(item => item.transacao);
@@ -3091,7 +3095,7 @@ class Routes {
             res.json({ ok: true });
         });
 
-        
+
 
         this.route.get('/registros/por-usuario/page/:page/count/:count/id-usuario/:idUsuario', function (req, res) {
             const page = parseFloat(req.params.page);
@@ -3110,7 +3114,7 @@ class Routes {
             });
         });
 
-        
+
 
 
         this.route.get('/registros-aprovados/id-usuario/:id', (req, res) => {

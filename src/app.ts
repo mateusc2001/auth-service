@@ -26,9 +26,7 @@ class App {
     }
 
     private database() {
-        const uri = 'mongodb://mateus:Oa8uwcZw5sjZsvwl@clusterhotel-shard-00-00-rc4kb.mongodb.net:27017,clusterhotel-shard-00-01-rc4kb.mongodb.net:27017,clusterhotel-shard-00-02-rc4kb.mongodb.net:27017/barbershop_tst?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority'
-        // const newUrl = 'mongodb+srv://mateus:123@clusterhotel.rc4kb.mongodb.net/barth-financeiro?retryWrites=true&w=majority';
-        const newUrl = 'mongodb://mateus:Oa8uwcZw5sjZsvwl@clusterhotel-shard-00-00.rc4kb.mongodb.net:27017,clusterhotel-shard-00-01.rc4kb.mongodb.net:27017,clusterhotel-shard-00-02.rc4kb.mongodb.net:27017/myFirstDatabase?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority';        
+        const uri = 'mongodb://mateus:12341234@clusterhotel-shard-00-00-rc4kb.mongodb.net:27017,clusterhotel-shard-00-01-rc4kb.mongodb.net:27017,clusterhotel-shard-00-02-rc4kb.mongodb.net:27017/barth-financeiro?ssl=true&replicaSet=ClusterHotel-shard-0&authSource=admin&retryWrites=true&w=majority';
         mongoose.connect(uri, { 
             useUnifiedTopology: true,
             useNewUrlParser: true,
